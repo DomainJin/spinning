@@ -1,0 +1,47 @@
+.viewport {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #171a2c;
+  border: 1px solid #2a2f4a;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.track {
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  font-size: 1.1rem;
+  color: #d8dae8;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  border-top: 2px solid #6366f1;
+  border-bottom: 2px solid #6366f1;
+  background: rgba(99, 102, 241, 0.14);
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7086;
+  font-style: italic;
+  text-align: center;
+  padding: 24px;
+}
