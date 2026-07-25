@@ -15,8 +15,8 @@ export const WHEEL_CONFIG = {
   minLoops: 3,
   maxLoops: 5,
   /** Spin duration bounds (ms) — actual duration scales with pool size within this range. */
-  minDurationMs: 4000,
-  maxDurationMs: 7000,
+  minDurationMs: 7000,
+  maxDurationMs: 13000,
   /** CSS cubic-bezier easing used for the deceleration curve. */
   easing: 'cubic-bezier(0.12, 0.85, 0.16, 1)',
 } as const
