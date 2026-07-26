@@ -18,16 +18,17 @@ export const WHEEL_CONFIG = {
   presenterVisibleRows: 5,
   /**
    * Fraction of the letterboxed presenter stage's height the reel viewport
-   * is allowed to occupy (the rest is left for glass-panel padding + the
-   * status/winner line). Row height is derived from this at runtime — see
-   * useStageHeightPx — instead of a fixed px/scale, because a fixed size
-   * can only ever be correct for one specific output resolution, and this
-   * stage's actual resolution depends on the LED wall's AV setup. Kept
-   * small enough that the whole glass panel (this + padding + the
-   * status/winner line) fits under the KV artwork's logo lockup — see
-   * APP_CONFIG.presenterContentTopPct.
+   * is allowed to occupy (the rest is glass-panel padding — the panel holds
+   * nothing else now that the status/winner line has been removed). Row
+   * height is derived from this at runtime — see useStageHeightPx — instead
+   * of a fixed px/scale, because a fixed size can only ever be correct for
+   * one specific output resolution, and this stage's actual resolution
+   * depends on the LED wall's AV setup. Sized so the glass panel's bottom
+   * edge reaches close to the stage's own bottom edge (measured against the
+   * KV artwork's negative-space band, which stays clear all the way down —
+   * see APP_CONFIG.presenterContentTopPct for the top anchor).
    */
-  presenterReelHeightFraction: 0.46,
+  presenterReelHeightFraction: 0.65,
   /** How many extra full loops of the pool the reel scrolls through before landing, for a convincing spin. */
   minLoops: 3,
   maxLoops: 5,
