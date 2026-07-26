@@ -68,25 +68,3 @@
   color: var(--text-muted);
   letter-spacing: 0.02em;
 }
-
-/*
- * Font sizes are set inline from the same stage-relative height used for the
- * reel rows (see PresenterView's itemHeightPxOverride) rather than an
- * independent vw-based clamp — otherwise the winner text scales completely
- * unrelated to the reel next to it and can dwarf it. `max-width` + wrapping
- * keeps a long "Đại tá NGUYỄN PHƯƠNG NAM"-style name from stretching the
- * glass panel; it wraps and shrinks (see the inline clamp) instead.
- */
-.winner {
-  font-family: var(--font-display);
-  font-weight: 700;
-  max-width: 100%;
-  white-space: nowrap;
-  line-height: 1.15;
-  background: var(--metallic-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-align: center;
-  text-shadow: 0 0 40px rgba(31, 209, 221, 0.35);
-}

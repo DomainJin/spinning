@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import type { CSSProperties } from 'react'
 import { usePresenterSync } from '../../hooks/usePresenterSync'
 import { PresenterReelWheel } from '../Wheel/PresenterReelWheel'
 import { useStageHeightPx } from '../Wheel/useStageHeightPx'
@@ -21,9 +21,15 @@ const stageStyle = {
  * Letterboxed to the LED wall's native aspect ratio (config-driven, see
  * APP_CONFIG.presenterAspectRatio) so the background art fills the frame
  * edge-to-edge instead of a thin cropped strip over a plain gradient.
+ *
+ * The reel itself is the only announcement of the winner — no separate
+ * name/banner below it. Once landed, ReelWheelView dims every row except
+ * the highlighted one (see its `focused` prop) so the eye goes straight to
+ * the winning row instead of splitting attention between the wheel and a
+ * repeated text callout.
  */
 export function PresenterView() {
-  const { status, lastResult, instant, presenterTextScale } = usePresenterSync()
+  const { status, lastResult, instant, presenterTextScale, idleItems } = usePresenterSync()
   const [stageRef, stageHeightPx] = useStageHeightPx()
   // Rounded to a whole pixel: the browser's layout engine can silently snap
   // a fractional CSS length to its own internal rounding grid (e.g. Blink
@@ -38,52 +44,7 @@ export function PresenterView() {
     (stageHeightPx * WHEEL_CONFIG.presenterReelHeightFraction * presenterTextScale) /
       WHEEL_CONFIG.presenterVisibleRows,
   )
-
-  // Scaled off the same resolved row height as the reel, not an independent
-  // viewport-relative size, so the winner reveal stays proportionate to it
-  // instead of dwarfing it. Long names (military-rank-prefixed names run
-  // long) get a smaller starting point from this character-count estimate.
-  const winnerName = lastResult?.winnerName ?? ''
-  const lengthFactor = Math.min(1, 16 / Math.max(winnerName.length, 1))
-  const baseWinnerFontSizePx = Math.max(itemHeightPxOverride * 0.85 * lengthFactor, itemHeightPxOverride * 0.4)
   const statusFontSizePx = itemHeightPxOverride * 0.5
-
-  const winnerRef = useRef<HTMLParagraphElement | null>(null)
-  const [winnerFontSizePx, setWinnerFontSizePx] = useState(baseWinnerFontSizePx)
-
-  // The character-count estimate above is only a rough starting point — it
-  // undercounts wide glyphs like the 🎉 emoji flanking the name, so even a
-  // short winner (a 3-digit ticket number) could still render wider than
-  // the glass panel and spill past its edges. Re-measuring the actual
-  // rendered width and shrinking to fit is the only way to guarantee it
-  // stays on one line and inside the panel regardless of font/emoji
-  // metrics.
-  //
-  // Resetting to the base size on a new winner is pure derived state, so
-  // it's adjusted during render (React's sanctioned pattern for "reset
-  // state when a prop changes") rather than in an effect — only the actual
-  // DOM-measurement correction below needs to be an effect.
-  const [prevWinnerName, setPrevWinnerName] = useState(winnerName)
-  if (winnerName !== prevWinnerName) {
-    setPrevWinnerName(winnerName)
-    setWinnerFontSizePx(baseWinnerFontSizePx)
-  }
-
-  useLayoutEffect(() => {
-    const el = winnerRef.current
-    if (!el || el.clientWidth === 0) return
-    const overflowPx = el.scrollWidth - el.clientWidth
-    if (overflowPx <= 0.5) return
-    const scale = el.clientWidth / el.scrollWidth
-    setWinnerFontSizePx((prev) => Math.max(prev * scale, itemHeightPxOverride * 0.15))
-    // `status` is included because it's what actually gates whether the
-    // <p> this effect measures exists in the DOM at all — winnerName (and
-    // therefore winnerFontSizePx) settles as soon as 'spin-start' arrives,
-    // well before status flips to 'result' and the paragraph mounts, so
-    // without status here this effect's dependencies stop changing before
-    // there's anything to measure, and it never re-fires once the
-    // paragraph actually appears.
-  }, [winnerFontSizePx, itemHeightPxOverride, winnerName, status])
 
   return (
     <div className={styles.stageOuter}>
@@ -97,6 +58,7 @@ export function PresenterView() {
           <div className={styles.glass}>
             <PresenterReelWheel
               sequence={lastResult?.sequence ?? null}
+              idleItems={idleItems}
               itemHeightPxOverride={itemHeightPxOverride}
               visibleRows={WHEEL_CONFIG.presenterVisibleRows}
               instant={instant}
@@ -111,11 +73,6 @@ export function PresenterView() {
             {status === 'spinning' && (
               <p className={styles.status} style={{ fontSize: statusFontSizePx }}>
                 Đang quay...
-              </p>
-            )}
-            {status === 'result' && lastResult && (
-              <p ref={winnerRef} className={styles.winner} style={{ fontSize: winnerFontSizePx }}>
-                🎉 {lastResult.winnerName} 🎉
               </p>
             )}
           </div>

@@ -1,4 +1,4 @@
-import type { ReelSequence } from './spin'
+import type { ReelItem, ReelSequence } from './spin'
 
 export interface SpinBroadcastPayload {
   /**
@@ -42,6 +42,11 @@ export interface SettingsUpdatePayload {
   presenterTextScale: number
 }
 
+export interface IdleItemsUpdatePayload {
+  /** A static preview of the pool to show before the first spin (or after a reset) — see ControlPanel's idleItems. */
+  items: ReelItem[]
+}
+
 /** Messages exchanged between the control window and presenter window(s) over BroadcastChannel. */
 export type SyncMessage =
   | { type: 'presenter-ready' }
@@ -49,4 +54,5 @@ export type SyncMessage =
   | { type: 'spin-start'; payload: SpinBroadcastPayload }
   | { type: 'spin-progress'; payload: SpinProgressPayload }
   | { type: 'settings-update'; payload: SettingsUpdatePayload }
+  | { type: 'idle-items-update'; payload: IdleItemsUpdatePayload }
   | { type: 'reset' }

@@ -19,6 +19,8 @@ export interface ReelWheelViewProps {
    * operator instruction there too is just confusing noise).
    */
   emptyMessage?: string | null
+  /** Dims every row except the highlighted one, once a result has landed — draws the eye to the winner without a separate announcement. */
+  focused?: boolean
 }
 
 /**
@@ -37,8 +39,24 @@ export function ReelWheelView({
   highlightStyle,
   pointerStyle,
   emptyMessage = 'Chưa có người tham dự — hãy nhập danh sách từ file Excel.',
+  focused = false,
 }: ReelWheelViewProps) {
   const viewportStyle = { height: viewportHeight, maxWidth: viewportMaxWidthPx }
+
+  // A "letterbox" gradient — opaque above and below the highlighted row's
+  // exact band, fully clear across it — rather than touching each row's own
+  // opacity, so it dims whatever's currently rendered there regardless of
+  // content and needs no per-row bookkeeping.
+  const focusOverlayStyle = {
+    background: `linear-gradient(to bottom,
+      rgba(4, 20, 26, 0.85) 0px,
+      rgba(4, 20, 26, 0.85) ${highlightStyle.top}px,
+      transparent ${highlightStyle.top}px,
+      transparent ${highlightStyle.top + highlightStyle.height}px,
+      rgba(4, 20, 26, 0.85) ${highlightStyle.top + highlightStyle.height}px,
+      rgba(4, 20, 26, 0.85) 100%)`,
+    opacity: focused ? 1 : 0,
+  }
 
   if (items.length === 0) {
     return (
@@ -74,6 +92,7 @@ export function ReelWheelView({
           </div>
         ))}
       </div>
+      <div className={styles.focusOverlay} style={focusOverlayStyle} />
       <div className={styles.highlight} style={highlightStyle} />
       <div className={`${styles.rail} ${styles.railLeft}`} />
       <div className={`${styles.rail} ${styles.railRight}`} />

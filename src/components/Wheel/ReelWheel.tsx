@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { WHEEL_CONFIG } from '../../config/wheelConfig'
+import { withStartMarker } from '../../core/participantPool'
 import type { ReelItem, ReelSequence } from '../../types/spin'
 import { useSourceReelAnimation } from './useSourceReelAnimation'
 import { ReelWheelView } from './ReelWheelView'
@@ -59,7 +60,16 @@ export function ReelWheel({
   })
   const viewportHeight = visibleRows * itemHeightPx
 
-  const items = sequence ? sequence.items : idleItems.slice(0, visibleRows)
+  // While idle, the row under the highlight is a "START" placeholder rather
+  // than whichever participant happens to occupy that slot — otherwise the
+  // reel looks like it already decided a winner before anyone's spun it.
+  // Only shown once there's an actual pool to preview; with none imported
+  // yet, ReelWheelView's own empty-state message is more useful.
+  const items = sequence
+    ? sequence.items
+    : idleItems.length > 0
+      ? withStartMarker(idleItems, centerIndex).slice(0, visibleRows)
+      : []
 
   const highlightStyle = useMemo(
     () => ({ top: centerIndex * itemHeightPx, height: itemHeightPx }),

@@ -1,5 +1,6 @@
 import { APP_CONFIG } from '../config/wheelConfig'
 import type {
+  IdleItemsUpdatePayload,
   PresenterState,
   SettingsUpdatePayload,
   SpinBroadcastPayload,
@@ -36,6 +37,10 @@ export function broadcastStateSync(payload: PresenterState): void {
 
 export function broadcastSettingsUpdate(payload: SettingsUpdatePayload): void {
   postSyncMessage({ type: 'settings-update', payload })
+}
+
+export function broadcastIdleItemsUpdate(payload: IdleItemsUpdatePayload): void {
+  postSyncMessage({ type: 'idle-items-update', payload })
 }
 
 /** Returns an unsubscribe function. */

@@ -1,15 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { postSyncMessage, subscribeSyncChannel } from '../store/syncChannel'
 import type { PresenterState } from '../types/sync'
+import type { ReelItem } from '../types/spin'
+
+type PresenterExtras = 'presenterTextScale' | 'idleItems'
 
 export interface PresenterViewState extends PresenterState {
   /** True when this result should render already landed with no animation — a presenter that joined after the spin had already resolved elsewhere. */
   instant: boolean
   /** Multiplier on the auto-computed row height, set from the control window — see PresenterView. */
   presenterTextScale: number
+  /** Static preview of the current pool, shown while idle — see PresenterView/ControlPanel's idleItems. */
+  idleItems: ReelItem[]
 }
 
-const IDLE_STATE: Omit<PresenterViewState, 'presenterTextScale'> = { status: 'idle', instant: false }
+const IDLE_STATE: Omit<PresenterViewState, PresenterExtras> = { status: 'idle', instant: false }
 
 /**
  * Presenter window state, driven entirely by messages from the control
@@ -25,8 +30,9 @@ const IDLE_STATE: Omit<PresenterViewState, 'presenterTextScale'> = { status: 'id
  * every time a spin/reset message arrives instead of persisting across them.
  */
 export function usePresenterSync(): PresenterViewState {
-  const [state, setState] = useState<Omit<PresenterViewState, 'presenterTextScale'>>(IDLE_STATE)
+  const [state, setState] = useState<Omit<PresenterViewState, PresenterExtras>>(IDLE_STATE)
   const [presenterTextScale, setPresenterTextScale] = useState(1)
+  const [idleItems, setIdleItems] = useState<ReelItem[]>([])
   const knownSpinIdRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -72,6 +78,10 @@ export function usePresenterSync(): PresenterViewState {
           setPresenterTextScale(message.payload.presenterTextScale)
           break
 
+        case 'idle-items-update':
+          setIdleItems(message.payload.items)
+          break
+
         case 'reset':
           knownSpinIdRef.current = null
           setState(IDLE_STATE)
@@ -82,5 +92,5 @@ export function usePresenterSync(): PresenterViewState {
     return unsubscribe
   }, [])
 
-  return { ...state, presenterTextScale }
+  return { ...state, presenterTextScale, idleItems }
 }

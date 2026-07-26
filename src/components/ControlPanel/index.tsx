@@ -3,7 +3,7 @@ import { ReelWheel } from '../Wheel/ReelWheel'
 import { useParticipantsStore } from '../../store/useParticipantsStore'
 import { useSettingsStore } from '../../store/useSettingsStore'
 import { useSpinStore } from '../../store/useSpinStore'
-import { getEligibleParticipants } from '../../core/participantPool'
+import { getEligibleParticipants, toIdleReelItems } from '../../core/participantPool'
 import { useControlSync } from '../../hooks/useControlSync'
 import { ParticipantImport } from './ParticipantImport'
 import { ParticipantList } from './ParticipantList'
@@ -23,10 +23,10 @@ export function ControlPanel() {
   const spinId = useSpinStore((s) => s.spinId)
   const completeSpin = useSpinStore((s) => s.completeSpin)
 
-  const idleItems = useMemo(() => {
-    const eligible = getEligibleParticipants(participants, removeAfterWin)
-    return eligible.map((p) => ({ key: p.id, participantId: p.id, name: p.name }))
-  }, [participants, removeAfterWin])
+  const idleItems = useMemo(
+    () => toIdleReelItems(getEligibleParticipants(participants, removeAfterWin)),
+    [participants, removeAfterWin],
+  )
 
   return (
     <div className={styles.page}>

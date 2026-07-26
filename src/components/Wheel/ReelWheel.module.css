@@ -45,6 +45,16 @@
   text-overflow: ellipsis;
 }
 
+/* Dims every row except the highlighted one once a result has landed — a
+   "letterbox" gradient with a clear window over the highlight's band,
+   rather than touching each row's own opacity (see ReelWheelView). */
+.focusOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 400ms ease-out;
+}
+
 .highlight {
   position: absolute;
   left: 0;

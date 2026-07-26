@@ -6,7 +6,10 @@ import {
   markWon,
   removeParticipant,
   resetWinners,
+  toIdleReelItems,
+  withStartMarker,
 } from './participantPool'
+import type { ReelItem } from '../types/spin'
 import type { Participant } from '../types/participant'
 
 describe('addParticipants', () => {
@@ -106,5 +109,49 @@ describe('getEligibleParticipants', () => {
   it('returns an empty array once everyone has won under remove-mode', () => {
     const allWon: Participant[] = pool.map((p) => ({ ...p, hasWon: true }))
     expect(getEligibleParticipants(allWon, true)).toEqual([])
+  })
+})
+
+describe('toIdleReelItems', () => {
+  it('maps each participant to a single reel item keyed by their own id', () => {
+    const pool = addParticipants([], ['Alice', 'Bob'])
+    const items = toIdleReelItems(pool)
+    expect(items).toEqual([
+      { key: pool[0].id, participantId: pool[0].id, name: 'Alice' },
+      { key: pool[1].id, participantId: pool[1].id, name: 'Bob' },
+    ])
+  })
+
+  it('returns an empty list for an empty pool', () => {
+    expect(toIdleReelItems([])).toEqual([])
+  })
+})
+
+describe('withStartMarker', () => {
+  const items: ReelItem[] = [
+    { key: 'a', participantId: 'a', name: 'Alice' },
+    { key: 'b', participantId: 'b', name: 'Bob' },
+    { key: 'c', participantId: 'c', name: 'Carol' },
+  ]
+
+  it('inserts the marker at centerIndex, keeping real items before and after it', () => {
+    const result = withStartMarker(items, 2)
+    expect(result.map((i) => i.name)).toEqual(['Alice', 'Bob', 'START', 'Carol'])
+  })
+
+  it('pads with blank rows before the marker when there are fewer items than centerIndex', () => {
+    const result = withStartMarker([items[0]], 3)
+    expect(result.map((i) => i.name)).toEqual(['Alice', '', '', 'START'])
+    expect(result[3].key).toBe('idle-start-marker')
+  })
+
+  it('pads entirely with blanks for an empty pool, still landing the marker at centerIndex', () => {
+    const result = withStartMarker([], 2)
+    expect(result.map((i) => i.name)).toEqual(['', '', 'START'])
+  })
+
+  it('marker sits at index 0 when centerIndex is 0', () => {
+    const result = withStartMarker(items, 0)
+    expect(result.map((i) => i.name)).toEqual(['START', 'Alice', 'Bob', 'Carol'])
   })
 })
