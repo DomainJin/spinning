@@ -55,8 +55,17 @@ export const WHEEL_CONFIG = {
   decelTimeFraction: 0.3,
   /** Fraction of total scroll distance covered during that slow-down phase (the rest happens during the fast cruise). */
   decelDistanceFraction: 0.12,
-  /** cubic-bezier control points for the slow-down phase — smooth, decisive stop. */
-  decelEasingControlPoints: [0.16, 1, 0.3, 1] as [number, number, number, number],
+  /**
+   * cubic-bezier control points for the slow-down phase. An "ease-out-quad"
+   * curve — the previous [0.16, 1, 0.3, 1] was "ease-out-expo", which
+   * reaches ~88% progress by just 30% of the way through this phase (it
+   * front-loads nearly the entire deceleration into the first instant, then
+   * crawls the rest), reading as a sudden brake rather than a gradual
+   * slowdown. This curve is only at ~51% progress by that same point,
+   * spreading the slowdown evenly across the whole phase for more felt
+   * suspense before it settles.
+   */
+  decelEasingControlPoints: [0.5, 1, 0.89, 1] as [number, number, number, number],
 } as const
 
 export const APP_CONFIG = {
