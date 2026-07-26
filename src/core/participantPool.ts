@@ -4,6 +4,12 @@ export function createParticipant(name: string): Participant {
   return { id: crypto.randomUUID(), name: name.trim(), hasWon: false }
 }
 
+/** Ticket numbers "1".."count" for a quick numeric draw when there's no name list — e.g. paper raffle-stub numbers. */
+export function generateNumberedNames(count: number): string[] {
+  const safeCount = Math.floor(Math.max(0, count))
+  return Array.from({ length: safeCount }, (_, i) => String(i + 1))
+}
+
 export function addParticipants(pool: Participant[], names: string[]): Participant[] {
   const additions = names
     .map((name) => name.trim())

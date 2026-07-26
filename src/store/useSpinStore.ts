@@ -20,7 +20,7 @@ interface SpinState {
   error: string | null
   /** Resolves the winner and starts the reel animation (control window only). */
   spin: () => void
-  /** Called once the reel's CSS transition has visually landed — commits history + marks the winner. */
+  /** Called once the reel's animation has visually landed — commits history + marks the winner. */
   completeSpin: () => void
   /** Clears winner flags so everyone is eligible again; leaves history and the rig queue untouched. */
   resetRound: () => void

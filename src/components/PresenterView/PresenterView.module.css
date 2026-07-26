@@ -37,13 +37,16 @@
 /* Positioned to sit in the KV artwork's actual clear negative-space band
    (measured from the source image — see APP_CONFIG.presenterContentCenterX)
    rather than the geometric center of the canvas, which overlaps the
-   product bottle on the left / face illustration on the right. */
+   product bottle on the left / face illustration on the right. Anchored
+   from the top (not vertically centered) at presenterContentTopPct, which
+   sits just below the logo lockup — centering would push the panel's top
+   edge upward as it grows taller and cover the logo. */
 .glass {
   position: absolute;
   left: calc(var(--content-center-x, 0.5) * 100%);
-  top: 50%;
-  transform: translate(-50%, -50%);
-  max-width: calc(var(--content-max-width-pct, 0.9) * 100%);
+  top: calc(var(--content-top-y, 0.23) * 100%);
+  transform: translateX(-50%);
+  width: calc(var(--content-width-pct, 0.2) * 100%);
   background: rgba(4, 20, 26, 0.6);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);

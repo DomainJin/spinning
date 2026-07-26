@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   addParticipants,
+  generateNumberedNames,
   getEligibleParticipants,
   markWon,
   removeParticipant,
@@ -34,6 +35,24 @@ describe('addParticipants', () => {
     const next = addParticipants(original, ['Bob'])
     expect(original).toHaveLength(1)
     expect(next).toHaveLength(2)
+  })
+})
+
+describe('generateNumberedNames', () => {
+  it('produces "1".."count" in order', () => {
+    expect(generateNumberedNames(5)).toEqual(['1', '2', '3', '4', '5'])
+  })
+
+  it('returns an empty list for zero', () => {
+    expect(generateNumberedNames(0)).toEqual([])
+  })
+
+  it('clamps negative counts to empty rather than throwing', () => {
+    expect(generateNumberedNames(-3)).toEqual([])
+  })
+
+  it('floors a fractional count', () => {
+    expect(generateNumberedNames(3.9)).toEqual(['1', '2', '3'])
   })
 })
 

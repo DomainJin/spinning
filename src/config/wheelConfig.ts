@@ -22,9 +22,12 @@ export const WHEEL_CONFIG = {
    * status/winner line). Row height is derived from this at runtime — see
    * useStageHeightPx — instead of a fixed px/scale, because a fixed size
    * can only ever be correct for one specific output resolution, and this
-   * stage's actual resolution depends on the LED wall's AV setup.
+   * stage's actual resolution depends on the LED wall's AV setup. Kept
+   * small enough that the whole glass panel (this + padding + the
+   * status/winner line) fits under the KV artwork's logo lockup — see
+   * APP_CONFIG.presenterContentTopPct.
    */
-  presenterReelHeightFraction: 0.58,
+  presenterReelHeightFraction: 0.34,
   /** How many extra full loops of the pool the reel scrolls through before landing, for a convincing spin. */
   minLoops: 3,
   maxLoops: 5,
@@ -40,16 +43,19 @@ export const WHEEL_CONFIG = {
    * The spin runs in two explicit phases rather than one bezier curve for
    * the whole thing — a single easing curve strong enough to look fast at
    * the start ends up finishing ~85-100% of the distance in the first
-   * 15-20% of the *time*, so the rest of the configured duration is spent
-   * essentially frozen waiting for transitionend. Splitting it out gives
-   * exact control over when the visible slow-down starts.
+   * 15-20% of the *time*, leaving the rest of the configured duration spent
+   * essentially frozen. Splitting it out gives exact control over when the
+   * visible slow-down starts. The control window computes this motion in JS
+   * every frame (see core/spinMotion.ts) and broadcasts the live position —
+   * the presenter only ever renders whatever position it's told, never its
+   * own independently-timed animation, so the two can't drift apart.
    */
   /** Fraction of total spin time spent in the slow-down phase (the rest is constant-speed cruising). */
   decelTimeFraction: 0.3,
   /** Fraction of total scroll distance covered during that slow-down phase (the rest happens during the fast cruise). */
   decelDistanceFraction: 0.12,
-  /** CSS timing function for the slow-down phase — smooth, decisive stop. */
-  decelEasing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+  /** cubic-bezier control points for the slow-down phase — smooth, decisive stop. */
+  decelEasingControlPoints: [0.16, 1, 0.3, 1] as [number, number, number, number],
 } as const
 
 export const APP_CONFIG = {
@@ -69,10 +75,29 @@ export const APP_CONFIG = {
   presenterAspectRatio: 5,
   /**
    * Where the reel/winner overlay sits on the presenter background, as a
-   * fraction of stage width/height. Measured directly from the KV artwork's
-   * clear negative-space band (product box ~0-20%, face illustration from
-   * ~51% onward) — the empty gap is centered around 35.5%, not 50%.
+   * fraction of stage width — measured directly from the KV artwork's
+   * "Pharmalogy | Phaselisa meso lifter" logo text (pixel-scanned: spans
+   * ~23.7%-42.9% of width, center ~33.3%), so the panel lines up under the
+   * logo instead of sitting in the middle of the whole empty gap.
    */
-  presenterContentCenterX: 0.355,
-  presenterContentMaxWidthPct: 0.3,
+  presenterContentCenterX: 0.333,
+  /**
+   * Fixed width of the overlay (not just a cap) — matched to the logo's
+   * measured ~19.1% width so the panel visually lines up with it exactly,
+   * regardless of whether the loaded content is short numbers or long
+   * names (letting width track content length would drift off-alignment
+   * with the logo depending on what's loaded).
+   */
+  presenterContentWidthPct: 0.2,
+  /**
+   * Top edge of the reel/winner overlay, as a fraction of stage height —
+   * measured from the KV artwork's brightness (the "Pharmalogy | Phaselisa"
+   * logo lockup spans roughly 8%-19% of stage height), so the panel starts
+   * safely below it instead of covering it. Anchored from the top rather
+   * than vertically centered so this stays true regardless of how tall the
+   * panel ends up (reel row count, font sizes, etc. change).
+   */
+  presenterContentTopPct: 0.23,
+  /** Upper bound on the "generate ticket numbers 1..N" quick-start input, so a typo doesn't allocate a huge in-memory list. */
+  maxGeneratedTickets: 5000,
 } as const

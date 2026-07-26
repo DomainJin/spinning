@@ -19,6 +19,7 @@ export function ControlPanel() {
   const participants = useParticipantsStore((s) => s.participants)
   const removeAfterWin = useSettingsStore((s) => s.removeAfterWin)
   const sequence = useSpinStore((s) => s.sequence)
+  const spinId = useSpinStore((s) => s.spinId)
   const completeSpin = useSpinStore((s) => s.completeSpin)
 
   const idleItems = useMemo(() => {
@@ -38,7 +39,12 @@ export function ControlPanel() {
 
         <main className={styles.main}>
           <section className={styles.wheelColumn}>
-            <ReelWheel idleItems={idleItems} sequence={sequence} onLanded={completeSpin} />
+            <ReelWheel
+              idleItems={idleItems}
+              sequence={sequence}
+              onLanded={completeSpin}
+              spinId={spinId}
+            />
             <SpinControls />
           </section>
 

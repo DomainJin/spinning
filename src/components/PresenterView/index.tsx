@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 import { usePresenterSync } from '../../hooks/usePresenterSync'
-import { ReelWheel } from '../Wheel/ReelWheel'
+import { PresenterReelWheel } from '../Wheel/PresenterReelWheel'
 import { useStageHeightPx } from '../Wheel/useStageHeightPx'
 import { WHEEL_CONFIG, APP_CONFIG } from '../../config/wheelConfig'
 import styles from './PresenterView.module.css'
@@ -9,7 +9,8 @@ const stageStyle = {
   aspectRatio: `${APP_CONFIG.presenterAspectRatio} / 1`,
   ['--presenter-ratio' as string]: APP_CONFIG.presenterAspectRatio,
   ['--content-center-x' as string]: APP_CONFIG.presenterContentCenterX,
-  ['--content-max-width-pct' as string]: APP_CONFIG.presenterContentMaxWidthPct,
+  ['--content-width-pct' as string]: APP_CONFIG.presenterContentWidthPct,
+  ['--content-top-y' as string]: APP_CONFIG.presenterContentTopPct,
 } as CSSProperties
 
 /**
@@ -46,12 +47,12 @@ export function PresenterView() {
         />
         <div className={styles.overlay}>
           <div className={styles.glass}>
-            <ReelWheel
-              idleItems={[]}
+            <PresenterReelWheel
               sequence={lastResult?.sequence ?? null}
               itemHeightPxOverride={itemHeightPxOverride}
               visibleRows={WHEEL_CONFIG.presenterVisibleRows}
               instant={instant}
+              spinId={lastResult?.spinId ?? null}
             />
             {status === 'idle' && (
               <p className={styles.status} style={{ fontSize: statusFontSizePx }}>
