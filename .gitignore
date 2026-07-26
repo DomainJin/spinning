@@ -26,3 +26,6 @@ yarn-error.log*
 
 # refact.ai editor metadata
 .refact
+
+# raw design source assets (optimized copies live under public/)
+KV-phalesiss-20x4m.png

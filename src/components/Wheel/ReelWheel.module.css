@@ -3,9 +3,11 @@
   width: 100%;
   overflow: hidden;
   border-radius: 16px;
-  background: #171a2c;
-  border: 1px solid #2a2f4a;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.45),
+    inset 0 0 40px rgba(31, 209, 221, 0.05);
 }
 
 .track {
@@ -18,9 +20,9 @@
   display: flex;
   align-items: center;
   padding: 0 24px;
-  font-size: 1.1rem;
-  color: #d8dae8;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-weight: 600;
+  color: var(--text);
+  border-bottom: 1px solid rgba(31, 209, 221, 0.08);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -31,16 +33,17 @@
   left: 0;
   right: 0;
   pointer-events: none;
-  border-top: 2px solid #6366f1;
-  border-bottom: 2px solid #6366f1;
-  background: rgba(99, 102, 241, 0.14);
+  border-top: 2px solid var(--accent);
+  border-bottom: 2px solid var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 24px rgba(31, 209, 221, 0.25);
 }
 
 .empty {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7086;
+  color: var(--text-muted);
   font-style: italic;
   text-align: center;
   padding: 24px;

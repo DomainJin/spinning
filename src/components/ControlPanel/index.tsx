@@ -28,30 +28,34 @@ export function ControlPanel() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <h1>Name Picker</h1>
-        <OpenPresenterButton />
-      </header>
+      <img className={styles.banner} src="/kv-banner.webp" alt="Phaselisa — The Art of Bio-Lifting" />
 
-      <main className={styles.main}>
-        <section className={styles.wheelColumn}>
-          <ReelWheel idleItems={idleItems} sequence={sequence} onLanded={completeSpin} />
-          <SpinControls />
-        </section>
+      <div className={styles.body}>
+        <header className={styles.header}>
+          <h1>Name Picker</h1>
+          <OpenPresenterButton />
+        </header>
 
-        <section className={styles.panelColumn}>
-          <div className={styles.panel}>
-            <ParticipantImport />
-            <ParticipantList />
-          </div>
-          <div className={styles.panel}>
-            <RigPanel />
-          </div>
-          <div className={styles.panel}>
-            <HistoryPanel />
-          </div>
-        </section>
-      </main>
+        <main className={styles.main}>
+          <section className={styles.wheelColumn}>
+            <ReelWheel idleItems={idleItems} sequence={sequence} onLanded={completeSpin} />
+            <SpinControls />
+          </section>
+
+          <section className={styles.panelColumn}>
+            <div className={styles.panel}>
+              <ParticipantImport />
+              <ParticipantList />
+            </div>
+            <div className={styles.panel}>
+              <RigPanel />
+            </div>
+            <div className={styles.panel}>
+              <HistoryPanel />
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
   )
 }

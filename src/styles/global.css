@@ -1,10 +1,32 @@
 :root {
   color-scheme: dark;
-  font-family:
-    'Segoe UI',
-    system-ui,
-    -apple-system,
-    sans-serif;
+
+  /* Palette lifted from the event key visual (KV-phalesiss-20x4m.png): deep
+     teal/near-black backdrop, bright cyan accent, chrome/metallic headline
+     treatment. Every component draws from these instead of its own colors. */
+  --bg: #04141a;
+  --bg-elevated: #071e26;
+  --panel-bg: #0a2530;
+  --panel-border: #164450;
+  --accent: #1fd1dd;
+  --accent-strong: #0e7c8c;
+  --accent-soft: rgba(31, 209, 221, 0.14);
+  --text: #eef7f8;
+  --text-muted: #7fa8ad;
+  --danger: #f87171;
+  --metallic-gradient: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #c9ced3 30%,
+    #f5f5f5 55%,
+    #9aa1a8 78%,
+    #ffffff 100%
+  );
+
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+
+  font-family: var(--font-body);
 }
 
 * {
@@ -19,8 +41,8 @@ body,
 }
 
 body {
-  background: #0f1220;
-  color: #f4f5f9;
+  background: var(--bg);
+  color: var(--text);
 }
 
 button {

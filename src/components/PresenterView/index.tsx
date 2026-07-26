@@ -13,19 +13,20 @@ export function PresenterView() {
 
   return (
     <div className={styles.stage}>
-      <div className={styles.wheelWrap}>
+      <img className={styles.banner} src="/kv-banner.webp" alt="Phaselisa — The Art of Bio-Lifting" />
+      <div className={styles.content}>
         <ReelWheel
           idleItems={[]}
           sequence={lastResult?.sequence ?? null}
           scale={WHEEL_CONFIG.presenterScale}
           instant={instant}
         />
+        {status === 'idle' && <p className={styles.status}>Đang chờ vòng quay tiếp theo...</p>}
+        {status === 'spinning' && <p className={styles.status}>Đang quay...</p>}
+        {status === 'result' && lastResult && (
+          <p className={styles.winner}>🎉 {lastResult.winnerName} 🎉</p>
+        )}
       </div>
-      {status === 'idle' && <p className={styles.status}>Đang chờ vòng quay tiếp theo...</p>}
-      {status === 'spinning' && <p className={styles.status}>Đang quay...</p>}
-      {status === 'result' && lastResult && (
-        <p className={styles.winner}>🎉 {lastResult.winnerName} 🎉</p>
-      )}
     </div>
   )
 }
