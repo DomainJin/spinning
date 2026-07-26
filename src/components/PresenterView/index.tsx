@@ -24,9 +24,17 @@ const stageStyle = {
  */
 export function PresenterView() {
   const { status, lastResult, instant } = usePresenterSync()
-  const stageHeightPx = useStageHeightPx()
-  const itemHeightPxOverride =
-    (stageHeightPx * WHEEL_CONFIG.presenterReelHeightFraction) / WHEEL_CONFIG.presenterVisibleRows
+  const [stageRef, stageHeightPx] = useStageHeightPx()
+  // Rounded to a whole pixel: the browser's layout engine can silently snap
+  // a fractional CSS length to its own internal rounding grid (e.g. Blink
+  // quantizes to 1/64px), so a row height computed as a raw fraction can
+  // render a hair shorter than the value this component's own math assumes.
+  // That's invisible on one row but accumulates linearly with row index —
+  // for a large participant pool the reel can land many pixels off the
+  // intended winner. Whole pixels have no such grid to fall between.
+  const itemHeightPxOverride = Math.round(
+    (stageHeightPx * WHEEL_CONFIG.presenterReelHeightFraction) / WHEEL_CONFIG.presenterVisibleRows,
+  )
 
   // Scaled off the same resolved row height as the reel, not an independent
   // viewport-relative size, so the winner reveal stays proportionate to it
@@ -39,7 +47,7 @@ export function PresenterView() {
 
   return (
     <div className={styles.stageOuter}>
-      <div className={styles.stage} style={stageStyle}>
+      <div className={styles.stage} style={stageStyle} ref={stageRef}>
         <img
           className={styles.backgroundImg}
           src="/kv-banner.webp"
@@ -52,6 +60,7 @@ export function PresenterView() {
               itemHeightPxOverride={itemHeightPxOverride}
               visibleRows={WHEEL_CONFIG.presenterVisibleRows}
               instant={instant}
+              landed={status === 'result'}
               spinId={lastResult?.spinId ?? null}
             />
             {status === 'idle' && (

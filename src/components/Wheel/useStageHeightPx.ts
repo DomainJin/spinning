@@ -1,24 +1,36 @@
-import { useEffect, useState } from 'react'
-import { APP_CONFIG } from '../../config/wheelConfig'
+import { useLayoutEffect, useRef, useState, type RefObject } from 'react'
 
-function computeStageHeightPx(): number {
-  if (typeof window === 'undefined') return 0
-  const { innerWidth, innerHeight } = window
-  // Mirrors the CSS letterbox formula (`min(100vw, 100vh * ratio)` for
-  // width) so JS knows the same resolved stage height the browser laid out,
-  // without needing to measure the DOM.
-  return Math.min(innerWidth / APP_CONFIG.presenterAspectRatio, innerHeight)
+function measure(el: HTMLElement | null): number {
+  return el ? el.getBoundingClientRect().height : 0
 }
 
-/** Live height (px) of the letterboxed presenter stage — recomputed on resize. */
-export function useStageHeightPx(): number {
-  const [height, setHeight] = useState(computeStageHeightPx)
+/**
+ * Live height (px) of the letterboxed presenter stage — measured directly
+ * from the DOM element the browser actually laid out, not recomputed
+ * independently from window.innerWidth/innerHeight.
+ *
+ * The stage's real size is decided by CSS (`width: min(100vw, 100vh *
+ * ratio)` + `aspect-ratio`), which can round/resolve to a slightly
+ * different pixel value than a parallel JS division of the raw window
+ * dimensions (e.g. scrollbar reservation, subpixel layout rounding). That
+ * drift is a fraction of a pixel per reel row and invisible at a glance,
+ * but it compounds across the hundreds of rows a large participant pool
+ * produces into a landing position that's visibly off — reading the
+ * rendered box directly removes the two-sources-of-truth gap entirely.
+ */
+export function useStageHeightPx(): [RefObject<HTMLDivElement | null>, number] {
+  const ref = useRef<HTMLDivElement | null>(null)
+  const [height, setHeight] = useState(0)
 
-  useEffect(() => {
-    const onResize = () => setHeight(computeStageHeightPx())
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    setHeight(measure(el))
+
+    const observer = new ResizeObserver(() => setHeight(measure(el)))
+    observer.observe(el)
+    return () => observer.disconnect()
   }, [])
 
-  return height
+  return [ref, height]
 }

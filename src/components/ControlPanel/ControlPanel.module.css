@@ -159,6 +159,10 @@ select.textInput {
   text-decoration: line-through;
 }
 
+.listRowPlayed {
+  opacity: 0.45;
+}
+
 .rowActions {
   display: flex;
   align-items: center;

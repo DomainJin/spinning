@@ -1,7 +1,7 @@
 import type { Participant } from '../types/participant'
 import type { ReelItem, ReelSequence } from '../types/spin'
 import { WHEEL_CONFIG } from '../config/wheelConfig'
-import { sanitizeQueue, type RigQueue } from './rigQueue'
+import { markPlayed, sanitizeQueue, type RigQueue } from './rigQueue'
 
 export interface SpinSelection {
   winner: Participant
@@ -10,18 +10,20 @@ export interface SpinSelection {
 }
 
 /**
- * Picks the winner for one spin: the rig queue's head takes priority (if it
- * still points at someone eligible), otherwise a uniform-random pick from
- * `eligible`. Returns null only when there is nobody left to pick from.
+ * Picks the winner for one spin: the rig queue's first *unplayed* entry
+ * takes priority (if it still points at someone eligible), otherwise a
+ * uniform-random pick from `eligible`. Returns null only when there is
+ * nobody left to pick from. A rigged pick is marked played in `nextQueue`
+ * rather than removed, so the operator can still see it happened.
  */
 export function selectWinner(eligible: Participant[], rigQueue: RigQueue): SpinSelection | null {
   const eligibleIds = new Set(eligible.map((p) => p.id))
   const cleanQueue = sanitizeQueue(rigQueue, eligibleIds)
-  const headId = cleanQueue[0]
-  if (headId !== undefined) {
-    const winner = eligible.find((p) => p.id === headId)
+  const headEntry = cleanQueue.find((entry) => !entry.played)
+  if (headEntry !== undefined) {
+    const winner = eligible.find((p) => p.id === headEntry.participantId)
     if (winner) {
-      return { winner, rigged: true, nextQueue: cleanQueue.slice(1) }
+      return { winner, rigged: true, nextQueue: markPlayed(cleanQueue, headEntry.id) }
     }
   }
   if (eligible.length === 0) return null

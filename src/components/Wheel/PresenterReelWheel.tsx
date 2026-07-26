@@ -11,6 +11,8 @@ export interface PresenterReelWheelProps {
   itemHeightPxOverride: number
   /** Land instantly with no animation — this presenter joined after the spin already resolved elsewhere. */
   instant?: boolean
+  /** True once the control window has confirmed this spin landed — forces the reel to the exact final position regardless of the progress-tick stream (see useMirrorReelAnimation). */
+  landed?: boolean
   visibleRows: number
   /** Which spin's progress broadcasts to mirror. */
   spinId: string | null
@@ -21,6 +23,7 @@ export function PresenterReelWheel({
   sequence,
   itemHeightPxOverride,
   instant = false,
+  landed = false,
   visibleRows,
   spinId,
 }: PresenterReelWheelProps) {
@@ -31,6 +34,7 @@ export function PresenterReelWheel({
     itemHeightPx: itemHeightPxOverride,
     centerIndex,
     instant,
+    landed,
     spinId,
   })
   const viewportHeight = visibleRows * itemHeightPxOverride

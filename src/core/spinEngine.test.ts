@@ -10,12 +10,25 @@ function makePool(names: string[]): Participant[] {
 }
 
 describe('selectWinner', () => {
-  it('picks the rig queue head when it is eligible', () => {
+  it('picks the rig queue head when it is eligible, marking it played instead of removing it', () => {
     const pool = makePool(['Alice', 'Bob', 'Carol'])
-    const result = selectWinner(pool, [pool[1].id])
+    const result = selectWinner(pool, [{ id: 'e1', participantId: pool[1].id, played: false }])
     expect(result?.winner.name).toBe('Bob')
     expect(result?.rigged).toBe(true)
-    expect(result?.nextQueue).toEqual([])
+    expect(result?.nextQueue).toEqual([{ id: 'e1', participantId: pool[1].id, played: true }])
+  })
+
+  it('skips already-played entries and picks the first unplayed one', () => {
+    const pool = makePool(['Alice', 'Bob', 'Carol'])
+    const result = selectWinner(pool, [
+      { id: 'e1', participantId: pool[0].id, played: true },
+      { id: 'e2', participantId: pool[1].id, played: false },
+    ])
+    expect(result?.winner.name).toBe('Bob')
+    expect(result?.nextQueue).toEqual([
+      { id: 'e1', participantId: pool[0].id, played: true },
+      { id: 'e2', participantId: pool[1].id, played: true },
+    ])
   })
 
   it('falls through to random when the rig queue is empty', () => {
@@ -25,9 +38,9 @@ describe('selectWinner', () => {
     expect(result?.rigged).toBe(false)
   })
 
-  it('drops a rig entry pointing at someone no longer eligible and falls back to random', () => {
+  it('drops an unplayed rig entry pointing at someone no longer eligible and falls back to random', () => {
     const pool = makePool(['Alice', 'Bob'])
-    const result = selectWinner(pool, ['ghost-id-not-in-pool'])
+    const result = selectWinner(pool, [{ id: 'e1', participantId: 'ghost-id-not-in-pool', played: false }])
     expect(result).not.toBeNull()
     expect(result?.rigged).toBe(false)
     expect(result?.nextQueue).toEqual([])
