@@ -60,6 +60,7 @@ export function PresenterReelWheel({
       effectiveScale={effectiveScale}
       highlightStyle={highlightStyle}
       pointerStyle={pointerStyle}
+      emptyMessage={null}
     />
   )
 }

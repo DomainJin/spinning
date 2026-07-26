@@ -12,6 +12,13 @@ export interface ReelWheelViewProps {
   effectiveScale: number
   highlightStyle: { top: number; height: number }
   pointerStyle: { top: number }
+  /**
+   * Message shown when `items` is empty. Defaults to the operator-facing
+   * import instruction; pass `null` to render nothing (the presenter window
+   * has its own audience-facing status text elsewhere and showing this
+   * operator instruction there too is just confusing noise).
+   */
+  emptyMessage?: string | null
 }
 
 /**
@@ -29,15 +36,25 @@ export function ReelWheelView({
   effectiveScale,
   highlightStyle,
   pointerStyle,
+  emptyMessage = 'Chưa có người tham dự — hãy nhập danh sách từ file Excel.',
 }: ReelWheelViewProps) {
   const viewportStyle = { height: viewportHeight, maxWidth: viewportMaxWidthPx }
 
   if (items.length === 0) {
     return (
-      <div className={styles.viewport} style={viewportStyle}>
-        <div className={styles.empty} style={{ height: viewportHeight, fontSize: `${effectiveScale}rem` }}>
-          Chưa có người tham dự — hãy nhập danh sách từ file Excel.
-        </div>
+      // key="empty" forces React to unmount/remount rather than patch the
+      // previous render's track element in place — without it, React reuses
+      // the same <div> (same tag, same position) across this branch and the
+      // track branch below, and any style property the animation hooks set
+      // imperatively (transform/animation — never part of this component's
+      // own `style` prop) isn't something React knows to clear, so it
+      // silently lingers on the reused node into the "empty" state.
+      <div className={styles.viewport} style={viewportStyle} key="empty">
+        {emptyMessage && (
+          <div className={styles.empty} style={{ height: viewportHeight, fontSize: `${effectiveScale}rem` }}>
+            {emptyMessage}
+          </div>
+        )}
         <div className={`${styles.rail} ${styles.railLeft}`} />
         <div className={`${styles.rail} ${styles.railRight}`} />
       </div>
@@ -45,7 +62,7 @@ export function ReelWheelView({
   }
 
   return (
-    <div className={styles.viewport} style={viewportStyle}>
+    <div className={styles.viewport} style={viewportStyle} key="track">
       <div ref={trackRef} className={styles.track}>
         {items.map((item) => (
           <div
