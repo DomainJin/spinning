@@ -37,12 +37,18 @@ export function PresenterView() {
   // render a hair shorter than the value this component's own math assumes.
   // That's invisible on one row but accumulates linearly with row index —
   // for a large participant pool the reel can land many pixels off the
-  // intended winner. Whole pixels have no such grid to fall between — the
-  // operator's text-size slider (presenterTextScale) is applied *before*
-  // this rounding, not after, so that invariant holds regardless of scale.
+  // intended winner. Whole pixels have no such grid to fall between.
+  //
+  // Deliberately NOT scaled by presenterTextScale — this is the reel's
+  // geometry (row height, viewport height, the glass panel's overall size,
+  // and the highlight/pointer position), which must stay fixed regardless
+  // of the operator's text-size slider. Otherwise the panel resizes and the
+  // pointer's pixel position shifts every time the slider moves, instead of
+  // staying locked to the frame the way it was sized against the KV
+  // artwork. The slider only scales the *font size* inside each row — see
+  // PresenterReelWheel's `textScale` prop.
   const itemHeightPxOverride = Math.round(
-    (stageHeightPx * WHEEL_CONFIG.presenterReelHeightFraction * presenterTextScale) /
-      WHEEL_CONFIG.presenterVisibleRows,
+    (stageHeightPx * WHEEL_CONFIG.presenterReelHeightFraction) / WHEEL_CONFIG.presenterVisibleRows,
   )
 
   return (
@@ -59,6 +65,7 @@ export function PresenterView() {
               sequence={lastResult?.sequence ?? null}
               idleItems={idleItems}
               itemHeightPxOverride={itemHeightPxOverride}
+              textScale={presenterTextScale}
               visibleRows={WHEEL_CONFIG.presenterVisibleRows}
               instant={instant}
               landed={status === 'result'}

@@ -12,6 +12,13 @@ export interface PresenterReelWheelProps {
   idleItems: ReelItem[]
   /** Exact row height (px) — see useStageHeightPx, since a fixed size can only ever fit one specific output resolution. */
   itemHeightPxOverride: number
+  /**
+   * Operator-set multiplier on top of the row's own font size — scales only
+   * the text, never row height/viewport size/highlight position, so the
+   * glass panel's size and the pointer's pixel position stay exactly where
+   * they were sized against the KV artwork regardless of this slider.
+   */
+  textScale?: number
   /** Land instantly with no animation — this presenter joined after the spin already resolved elsewhere. */
   instant?: boolean
   /** True once the control window has confirmed this spin landed — forces the reel to the exact final position regardless of the progress-tick stream (see useMirrorReelAnimation). */
@@ -26,12 +33,17 @@ export function PresenterReelWheel({
   sequence,
   idleItems,
   itemHeightPxOverride,
+  textScale = 1,
   instant = false,
   landed = false,
   visibleRows,
   spinId,
 }: PresenterReelWheelProps) {
-  const effectiveScale = itemHeightPxOverride / WHEEL_CONFIG.itemHeightPx
+  // Kept separate from the font-size scale below on purpose — this drives
+  // the viewport's width constraint, a container dimension that (like row
+  // height) must stay fixed regardless of the text-size slider.
+  const geometryScale = itemHeightPxOverride / WHEEL_CONFIG.itemHeightPx
+  const fontScale = geometryScale * textScale
   const centerIndex = Math.floor(visibleRows / 2)
   const trackRef = useMirrorReelAnimation({
     sequence,
@@ -67,8 +79,8 @@ export function PresenterReelWheel({
       items={items}
       itemHeightPx={itemHeightPxOverride}
       viewportHeight={viewportHeight}
-      viewportMaxWidthPx={WHEEL_CONFIG.viewportMaxWidthPx * effectiveScale}
-      effectiveScale={effectiveScale}
+      viewportMaxWidthPx={WHEEL_CONFIG.viewportMaxWidthPx * geometryScale}
+      effectiveScale={fontScale}
       highlightStyle={highlightStyle}
       pointerStyle={pointerStyle}
       emptyMessage={null}
