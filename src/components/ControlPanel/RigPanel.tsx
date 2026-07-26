@@ -48,7 +48,7 @@ export function RigPanel() {
   return (
     <div>
       <div className={styles.sectionHeader}>
-        <h2>Cơ cấu trước ({pendingCount})</h2>
+        <h2>Config trước ({pendingCount})</h2>
       </div>
       <div className={styles.importRow}>
         <select
@@ -122,7 +122,7 @@ export function RigPanel() {
         })}
         {queue.length === 0 && (
           <li className={styles.emptyRow}>
-            Chưa cơ cấu người thắng nào — lượt quay tiếp theo sẽ ngẫu nhiên.
+            Chưa config người thắng nào — lượt quay tiếp theo sẽ ngẫu nhiên.
           </li>
         )}
       </ol>

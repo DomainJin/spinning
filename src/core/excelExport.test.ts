@@ -17,9 +17,9 @@ describe('historyToWorkbookBuffer', () => {
 
     expect(rows).toHaveLength(2)
     expect(rows[0]['Tên người thắng']).toBe('Alice')
-    expect(rows[0]['Cơ cấu trước']).toBe('Không')
+    expect(rows[0]['Config trước']).toBe('Không')
     expect(rows[1]['Tên người thắng']).toBe('Bob, "The Great"')
-    expect(rows[1]['Cơ cấu trước']).toBe('Có')
+    expect(rows[1]['Config trước']).toBe('Có')
   })
 
   it('produces a valid (empty) workbook for an empty history', async () => {
@@ -34,11 +34,11 @@ describe('historyToCsv', () => {
   it('quotes and escapes values containing commas or quotes', () => {
     const csv = historyToCsv(history)
     const lines = csv.split('\r\n')
-    expect(lines[0]).toBe('STT,Ten nguoi thang,Thoi gian,Co cau truoc')
+    expect(lines[0]).toBe('STT,Ten nguoi thang,Thoi gian,Config truoc')
     expect(lines[2]).toContain('"Bob, ""The Great"""')
   })
 
   it('returns just the header row for empty history', () => {
-    expect(historyToCsv([])).toBe('STT,Ten nguoi thang,Thoi gian,Co cau truoc')
+    expect(historyToCsv([])).toBe('STT,Ten nguoi thang,Thoi gian,Config truoc')
   })
 })

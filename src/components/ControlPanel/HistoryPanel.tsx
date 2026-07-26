@@ -59,7 +59,7 @@ export function HistoryPanel() {
             <span>{entry.name}</span>
             <span className={styles.subtle}>
               {new Date(entry.wonAt).toLocaleTimeString('vi-VN')}
-              {entry.rigged ? ' · cơ cấu' : ''}
+              {entry.rigged ? ' · config' : ''}
             </span>
           </li>
         ))}

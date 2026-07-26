@@ -81,7 +81,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   max-width: 100%;
-  overflow-wrap: break-word;
+  white-space: nowrap;
   line-height: 1.15;
   background: var(--metallic-gradient);
   -webkit-background-clip: text;

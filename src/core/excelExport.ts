@@ -5,7 +5,7 @@ function toRows(history: HistoryEntry[]) {
     STT: index + 1,
     'Tên người thắng': entry.name,
     'Thời gian': new Date(entry.wonAt).toLocaleString('vi-VN'),
-    'Cơ cấu trước': entry.rigged ? 'Có' : 'Không',
+    'Config trước': entry.rigged ? 'Có' : 'Không',
   }))
 }
 
@@ -25,7 +25,7 @@ function csvEscape(value: string): string {
 }
 
 export function historyToCsv(history: HistoryEntry[]): string {
-  const header = ['STT', 'Ten nguoi thang', 'Thoi gian', 'Co cau truoc']
+  const header = ['STT', 'Ten nguoi thang', 'Thoi gian', 'Config truoc']
   const lines = [header.join(',')]
   history.forEach((entry, index) => {
     const cells = [
