@@ -1,41 +1,71 @@
-.stage {
+.stageOuter {
   min-height: 100vh;
   width: 100%;
+  background: #000;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   cursor: none;
-  background: radial-gradient(ellipse at top, #0d2530 0%, #04141a 65%);
 }
 
-.banner {
+/* Letterboxed to the LED wall's aspect ratio (--presenter-ratio, set inline
+   from config) regardless of the actual browser window shape — width is
+   capped by whichever of "full viewport width" or "the width a full-height
+   box of this ratio would need" is smaller, so it never overflows either
+   axis and never gets stretched off-ratio inside the page itself. */
+.stage {
+  position: relative;
+  width: min(100vw, calc(100vh * var(--presenter-ratio, 5)));
+  overflow: hidden;
+}
+
+.backgroundImg {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: clamp(64px, 8vw, 120px);
+  height: 100%;
   object-fit: cover;
-  object-position: center 42%;
+  object-position: center;
   display: block;
-  border-bottom: 1px solid var(--panel-border);
-  flex-shrink: 0;
 }
 
-.content {
-  flex: 1;
+.overlay {
+  position: absolute;
+  inset: 0;
+}
+
+/* Positioned to sit in the KV artwork's actual clear negative-space band
+   (measured from the source image — see APP_CONFIG.presenterContentCenterX)
+   rather than the geometric center of the canvas, which overlaps the
+   product bottle on the left / face illustration on the right. */
+.glass {
+  position: absolute;
+  left: calc(var(--content-center-x, 0.5) * 100%);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: calc(var(--content-max-width-pct, 0.9) * 100%);
+  background: rgba(4, 20, 26, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(31, 209, 221, 0.3);
+  border-radius: 1.2vw;
+  padding: 1.5vw 2.8vw;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 32px;
-  padding: 24px;
+  gap: 1.2vw;
+  box-shadow: 0 2vw 6vw rgba(0, 0, 0, 0.5);
 }
 
 .status {
   color: var(--text-muted);
-  font-size: 1.4rem;
+  font-size: clamp(0.85rem, 1.6vw, 1.4rem);
   letter-spacing: 0.02em;
 }
 
 .winner {
   font-family: var(--font-display);
-  font-size: 3rem;
+  font-size: clamp(1.3rem, 3.2vw, 3rem);
   font-weight: 700;
   background: var(--metallic-gradient);
   -webkit-background-clip: text;

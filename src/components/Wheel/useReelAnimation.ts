@@ -7,6 +7,8 @@ interface UseReelAnimationOptions {
   onLanded?: () => void
   /** Row height in px used for the translateY math — must match the caller's actual rendered row height. */
   itemHeightPx: number
+  /** Which row index lands in the viewport's highlighted center — must match whatever positions the highlight element, or the reel lands visually off from where the pointer marks. */
+  centerIndex: number
   /** Skip the spin animation and jump straight to the resting position (e.g. a presenter catching up to an already-decided spin). */
   instant?: boolean
 }
@@ -21,6 +23,7 @@ export function useReelAnimation({
   sequence,
   onLanded,
   itemHeightPx,
+  centerIndex,
   instant = false,
 }: UseReelAnimationOptions) {
   const trackRef = useRef<HTMLDivElement | null>(null)
@@ -40,7 +43,6 @@ export function useReelAnimation({
       return
     }
 
-    const centerIndex = Math.floor(WHEEL_CONFIG.visibleCount / 2)
     const targetY = -(sequence.winnerIndex - centerIndex) * itemHeightPx
 
     if (instant) {
@@ -77,7 +79,7 @@ export function useReelAnimation({
       cancelAnimationFrame(frame2)
       track.removeEventListener('transitionend', handleTransitionEnd)
     }
-  }, [sequence, itemHeightPx, instant])
+  }, [sequence, itemHeightPx, centerIndex, instant])
 
   return trackRef
 }
