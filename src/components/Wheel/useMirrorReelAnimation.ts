@@ -53,10 +53,30 @@ export function useMirrorReelAnimation({
   const targetYRef = useRef(0)
   const durationRef = useRef(0)
 
+  // Recomputed every render from current props — itemHeightPx/centerIndex
+  // change on window resize (see useStageHeightPx), so this must stay a
+  // plain derived value rather than something only (re)computed inside an
+  // effect keyed on the spin itself, otherwise a resize has no way to
+  // correct it.
+  const targetY = sequence ? -(sequence.winnerIndex - centerIndex) * itemHeightPx : 0
+
   useLayoutEffect(() => {
     spinIdRef.current = spinId
   }, [spinId])
 
+  useLayoutEffect(() => {
+    targetYRef.current = targetY
+    durationRef.current = sequence?.durationMs ?? 0
+  }, [targetY, sequence])
+
+  // Starts (or stops) the spin animation. Keyed only on the spin itself
+  // (sequence identity + instant), never on itemHeightPx/centerIndex —
+  // those change on every window resize/fullscreen toggle, and keying this
+  // effect on them made a resize look like a brand new spin: it reset the
+  // reel to translateY(0) and replayed the blur keyframe from scratch,
+  // which is the "jumps back / blurs then clears" resize glitch. Resizing
+  // must only change *where* the reel already sitting still lands — see
+  // the correction effect below — never restart the animation itself.
   useLayoutEffect(() => {
     const track = trackRef.current
     if (!track) return
@@ -67,28 +87,27 @@ export function useMirrorReelAnimation({
       return
     }
 
-    const targetY = -(sequence.winnerIndex - centerIndex) * itemHeightPx
-    targetYRef.current = targetY
-    durationRef.current = sequence.durationMs
-
-    if (instant) {
-      track.style.animation = 'none'
-      track.style.transform = `translateY(${targetY}px)`
-      return
-    }
+    if (instant) return // the correction effect below snaps it directly
 
     track.style.animation = `${BLUR_ANIMATION_NAME} ${sequence.durationMs}ms ease-out forwards`
     track.style.transform = 'translateY(0px)'
-  }, [sequence, itemHeightPx, centerIndex, instant])
+  }, [sequence, instant])
 
-  // Correctness backstop — see the `landed` doc comment above.
+  // Correctness backstop — see the `landed` doc comment above. Also doubles
+  // as the resize correction: whenever the reel is supposed to be resting
+  // at an exact known position (already landed, or a late-joining instant
+  // land) and that position's pixel value changes — the spin landing, or a
+  // resize changing itemHeightPx while already resting — snap straight to
+  // it with no animation. Guarded to skip entirely while a spin is still
+  // genuinely in flight, so a resize mid-spin never interrupts it; only a
+  // *held* position gets corrected.
   useLayoutEffect(() => {
-    if (!landed) return
+    if (!landed && !instant) return
     const track = trackRef.current
     if (!track) return
     track.style.animation = 'none'
-    track.style.transform = `translateY(${targetYRef.current}px)`
-  }, [landed])
+    track.style.transform = `translateY(${targetY}px)`
+  }, [targetY, landed, instant])
 
   // Persistent for the component's lifetime — see the hook doc comment
   // above on why a per-spin subscription is unsafe.
