@@ -36,8 +36,20 @@ export const WHEEL_CONFIG = {
   minSpinDurationSec: 5,
   maxSpinDurationSec: 20,
   defaultSpinDurationSec: 10,
-  /** CSS cubic-bezier easing used for the deceleration curve. */
-  easing: 'cubic-bezier(0.12, 0.85, 0.16, 1)',
+  /**
+   * The spin runs in two explicit phases rather than one bezier curve for
+   * the whole thing — a single easing curve strong enough to look fast at
+   * the start ends up finishing ~85-100% of the distance in the first
+   * 15-20% of the *time*, so the rest of the configured duration is spent
+   * essentially frozen waiting for transitionend. Splitting it out gives
+   * exact control over when the visible slow-down starts.
+   */
+  /** Fraction of total spin time spent in the slow-down phase (the rest is constant-speed cruising). */
+  decelTimeFraction: 0.3,
+  /** Fraction of total scroll distance covered during that slow-down phase (the rest happens during the fast cruise). */
+  decelDistanceFraction: 0.12,
+  /** CSS timing function for the slow-down phase — smooth, decisive stop. */
+  decelEasing: 'cubic-bezier(0.16, 1, 0.3, 1)',
 } as const
 
 export const APP_CONFIG = {

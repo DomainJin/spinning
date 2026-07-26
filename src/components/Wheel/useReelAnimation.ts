@@ -21,6 +21,14 @@ interface UseReelAnimationOptions {
  * so the CSS transition runs smoothly without a re-render on every frame.
  * A fresh `sequence` reference re-triggers the "snap to top, then animate to
  * target" sequence; `sequence === null` just snaps back to the idle view.
+ *
+ * The spin itself runs as two chained CSS transitions — a fast constant-speed
+ * "cruise" covering most of the distance, then a short eased "decel" phase
+ * covering the rest — rather than one easing curve for the whole duration.
+ * A single curve strong enough to *look* fast at the start visually finishes
+ * almost all the movement in the first ~15% of the time and then sits nearly
+ * still for the remainder while still waiting on transitionend; chaining two
+ * transitions gives exact control over when the visible slow-down starts.
  */
 export function useReelAnimation({
   sequence,
@@ -63,23 +71,41 @@ export function useReelAnimation({
     // Force the browser to commit the transition-less reset before re-enabling it below.
     void track.offsetHeight
 
+    const decelDurationMs = sequence.durationMs * WHEEL_CONFIG.decelTimeFraction
+    const cruiseDurationMs = sequence.durationMs - decelDurationMs
+    const cruiseY = targetY * (1 - WHEEL_CONFIG.decelDistanceFraction)
+
     let frame1 = 0
     let frame2 = 0
+    let decelStarted = false
+
+    const startDecelPhase = () => {
+      const current = trackRef.current
+      if (!current || decelStarted) return
+      decelStarted = true
+      current.style.transition = `transform ${decelDurationMs}ms ${WHEEL_CONFIG.decelEasing}`
+      current.style.transform = `translateY(${targetY}px)`
+    }
+
+    const handleTransitionEnd = (event: TransitionEvent) => {
+      if (event.propertyName !== 'transform') return
+      if (!decelStarted) {
+        startDecelPhase()
+      } else {
+        onLandedRef.current?.()
+      }
+    }
+    track.addEventListener('transitionend', handleTransitionEnd)
+
     frame1 = requestAnimationFrame(() => {
       frame2 = requestAnimationFrame(() => {
         const current = trackRef.current
         if (!current) return
-        current.style.transition = `transform ${sequence.durationMs}ms ${WHEEL_CONFIG.easing}`
+        current.style.transition = `transform ${cruiseDurationMs}ms linear`
         current.style.animation = `${BLUR_ANIMATION_NAME} ${sequence.durationMs}ms ease-out forwards`
-        current.style.transform = `translateY(${targetY}px)`
+        current.style.transform = `translateY(${cruiseY}px)`
       })
     })
-
-    const handleTransitionEnd = (event: TransitionEvent) => {
-      if (event.propertyName !== 'transform') return
-      onLandedRef.current?.()
-    }
-    track.addEventListener('transitionend', handleTransitionEnd)
 
     return () => {
       cancelAnimationFrame(frame1)
