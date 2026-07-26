@@ -22,7 +22,7 @@ interface SpinState {
   spin: () => void
   /** Called once the reel's animation has visually landed — commits history + marks the winner. */
   completeSpin: () => void
-  /** Clears winner flags so everyone is eligible again; leaves history and the rig queue untouched. */
+  /** Clears the frozen result so the reel is ready for the next spin; leaves winner flags, history, and the rig queue untouched. */
   resetRound: () => void
   /** Wipes every participant, rig entry, history entry, and setting back to a blank first-run state. */
   resetAllData: () => void
@@ -85,7 +85,6 @@ export const useSpinStore = create<SpinState>((set, get) => ({
   },
 
   resetRound: () => {
-    useParticipantsStore.getState().resetWinners()
     set({
       status: 'idle',
       spinId: null,

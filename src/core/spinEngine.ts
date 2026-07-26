@@ -45,6 +45,36 @@ function toReelItem(p: Participant, lap: number, seat: number): ReelItem {
 }
 
 /**
+ * Same as `shuffled`, but if the result's first element would collide with
+ * `avoidId` — typically whoever the reel just showed, right before this
+ * shuffle's segment starts — swaps it out for a different position.
+ *
+ * Each independent shuffle only guarantees no repeats *within* itself, not
+ * across the boundary with whatever segment came before it, so the same
+ * participant can otherwise land in two adjacent rows purely by chance
+ * right where one segment (a lap, or the pre/post-winner padding) meets the
+ * next. This is a single, local, one-time fix applied at the moment each
+ * segment is built, rather than a global pass over the finished sequence —
+ * an earlier version of this logic re-scanned and swapped rows after the
+ * fact and could undo its own fix a few rows later (each swap looked valid
+ * in isolation), oscillating instead of converging and occasionally making
+ * things worse. Fixing each boundary once, in construction order, can't do
+ * that.
+ */
+function shuffledAvoidingFirst(
+  pool: Participant[],
+  rng: () => number,
+  avoidId: string | null,
+): Participant[] {
+  const result = shuffled(pool, rng)
+  if (avoidId !== null && result.length > 1 && result[0].id === avoidId) {
+    const swapWith = 1 + Math.floor(rng() * (result.length - 1))
+    ;[result[0], result[swapWith]] = [result[swapWith], result[0]]
+  }
+  return result
+}
+
+/**
  * Builds the full reel item list the UI animates through. `eligible` must
  * include `winner` (guaranteed by `selectWinner`'s contract) — every lap is
  * an independent shuffle of `eligible` so the reel doesn't visibly repeat a
@@ -62,19 +92,32 @@ export function buildReelSequence(
   const loops = minLoops + Math.floor(rng() * (maxLoops - minLoops + 1))
 
   const items: ReelItem[] = []
+  let lastId: string | null = null
   for (let lap = 0; lap < loops; lap++) {
-    shuffled(eligible, rng).forEach((p, seat) => items.push(toReelItem(p, lap, seat)))
+    const lapItems = shuffledAvoidingFirst(eligible, rng, lastId)
+    lapItems.forEach((p, seat) => items.push(toReelItem(p, lap, seat)))
+    lastId = lapItems[lapItems.length - 1]?.id ?? null
   }
 
-  const preWinner = shuffled(eligible, rng)
-  for (let i = 0; i < centerIndex; i++) {
-    items.push(toReelItem(preWinner[i % preWinner.length], loops, i))
+  const preWinner = shuffledAvoidingFirst(eligible, rng, lastId)
+  const preWinnerRows = Array.from({ length: centerIndex }, (_, i) => preWinner[i % preWinner.length])
+  // The row right before the winner shouldn't show the winner again —
+  // `shuffledAvoidingFirst` only protects preWinnerRows[0] (the boundary
+  // with the lap above); this is the *other* boundary, with the winner's
+  // own row right after it. Adjacent preWinnerRows entries can never
+  // collide with each other (see the function doc above), so only this
+  // last slot needs checking.
+  if (centerIndex > 0 && preWinnerRows[centerIndex - 1].id === winner.id) {
+    const prevId = centerIndex >= 2 ? preWinnerRows[centerIndex - 2].id : lastId
+    const replacement = eligible.find((p) => p.id !== winner.id && p.id !== prevId)
+    if (replacement) preWinnerRows[centerIndex - 1] = replacement
   }
+  preWinnerRows.forEach((p, i) => items.push(toReelItem(p, loops, i)))
 
   const winnerIndex = items.length
   items.push(toReelItem(winner, loops, centerIndex))
 
-  const postWinner = shuffled(eligible, rng)
+  const postWinner = shuffledAvoidingFirst(eligible, rng, winner.id)
   for (let i = 0; i < tailAfterCount; i++) {
     items.push(toReelItem(postWinner[i % postWinner.length], loops + 1, i))
   }

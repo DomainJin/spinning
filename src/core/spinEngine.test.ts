@@ -98,4 +98,31 @@ describe('buildReelSequence', () => {
     const sequence = buildReelSequence(pool, winner, TARGET_DURATION_MS, () => 0)
     expect(sequence.durationMs).toBe(TARGET_DURATION_MS)
   })
+
+  it('never places the same participant in two adjacent rows (many trials, small pool most prone to boundary collisions)', () => {
+    const smallPool = makePool(['Alice', 'Bob', 'Carol'])
+    for (let trial = 0; trial < 200; trial++) {
+      const sequence = buildReelSequence(smallPool, smallPool[1], TARGET_DURATION_MS)
+      for (let i = 1; i < sequence.items.length; i++) {
+        expect(sequence.items[i].participantId).not.toBe(sequence.items[i - 1].participantId)
+      }
+    }
+  })
+
+  it('never places the winner directly before or after another row showing the same participant', () => {
+    for (let trial = 0; trial < 200; trial++) {
+      const sequence = buildReelSequence(pool, winner, TARGET_DURATION_MS)
+      const before = sequence.items[sequence.winnerIndex - 1]
+      const after = sequence.items[sequence.winnerIndex + 1]
+      if (before) expect(before.participantId).not.toBe(winner.id)
+      if (after) expect(after.participantId).not.toBe(winner.id)
+    }
+  })
+
+  it('keeps the winner at winnerIndex even when deduplication has to move rows around it', () => {
+    for (let trial = 0; trial < 200; trial++) {
+      const sequence = buildReelSequence(pool, winner, TARGET_DURATION_MS)
+      expect(sequence.items[sequence.winnerIndex].participantId).toBe(winner.id)
+    }
+  })
 })

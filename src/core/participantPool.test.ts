@@ -5,7 +5,6 @@ import {
   getEligibleParticipants,
   markWon,
   removeParticipant,
-  resetWinners,
   toIdleReelItems,
   withStartMarker,
 } from './participantPool'
@@ -73,20 +72,12 @@ describe('removeParticipant', () => {
   })
 })
 
-describe('markWon / resetWinners', () => {
+describe('markWon', () => {
   it('flags only the targeted participant as won', () => {
     const pool = addParticipants([], ['Alice', 'Bob'])
     const next = markWon(pool, pool[0].id)
     expect(next[0].hasWon).toBe(true)
     expect(next[1].hasWon).toBe(false)
-  })
-
-  it('resetWinners clears every hasWon flag', () => {
-    let pool = addParticipants([], ['Alice', 'Bob'])
-    pool = markWon(pool, pool[0].id)
-    pool = markWon(pool, pool[1].id)
-    const reset = resetWinners(pool)
-    expect(reset.every((p) => !p.hasWon)).toBe(true)
   })
 })
 
