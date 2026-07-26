@@ -1,18 +1,28 @@
 import { create } from 'zustand'
+import { WHEEL_CONFIG } from '../config/wheelConfig'
 import { loadPersisted, savePersisted } from './persist'
 
-const STORAGE_KEY = 'settings:removeAfterWin'
+const REMOVE_AFTER_WIN_KEY = 'settings:removeAfterWin'
+const SPIN_DURATION_KEY = 'settings:spinDurationSec'
 
 interface SettingsState {
   /** When true, a winner is taken out of the pool for future spins; when false, they can win again. */
   removeAfterWin: boolean
   setRemoveAfterWin: (value: boolean) => void
+  /** Target spin length in seconds (the longest a spin runs at, for a full pool) — see spinEngine.computeDurationMs. */
+  spinDurationSec: number
+  setSpinDurationSec: (value: number) => void
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({
-  removeAfterWin: loadPersisted<boolean>(STORAGE_KEY, true),
+  removeAfterWin: loadPersisted<boolean>(REMOVE_AFTER_WIN_KEY, true),
   setRemoveAfterWin: (value) => {
-    savePersisted(STORAGE_KEY, value)
+    savePersisted(REMOVE_AFTER_WIN_KEY, value)
     set({ removeAfterWin: value })
+  },
+  spinDurationSec: loadPersisted<number>(SPIN_DURATION_KEY, WHEEL_CONFIG.defaultSpinDurationSec),
+  setSpinDurationSec: (value) => {
+    savePersisted(SPIN_DURATION_KEY, value)
+    set({ spinDurationSec: value })
   },
 }))

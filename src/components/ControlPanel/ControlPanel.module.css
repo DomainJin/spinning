@@ -269,6 +269,22 @@ select.textInput {
   accent-color: var(--accent);
 }
 
+.durationRow {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: 100%;
+  max-width: 320px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.durationRow input[type='range'] {
+  accent-color: var(--accent);
+  width: 100%;
+}
+
 .spinButton {
   background: linear-gradient(135deg, var(--accent-strong), var(--accent));
   color: #04141a;

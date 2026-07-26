@@ -1,3 +1,4 @@
+import { WHEEL_CONFIG } from '../../config/wheelConfig'
 import { useParticipantsStore } from '../../store/useParticipantsStore'
 import { useSettingsStore } from '../../store/useSettingsStore'
 import { useSpinStore } from '../../store/useSpinStore'
@@ -7,6 +8,8 @@ export function SpinControls() {
   const hasParticipants = useParticipantsStore((s) => s.participants.length > 0)
   const removeAfterWin = useSettingsStore((s) => s.removeAfterWin)
   const setRemoveAfterWin = useSettingsStore((s) => s.setRemoveAfterWin)
+  const spinDurationSec = useSettingsStore((s) => s.spinDurationSec)
+  const setSpinDurationSec = useSettingsStore((s) => s.setSpinDurationSec)
   const status = useSpinStore((s) => s.status)
   const winner = useSpinStore((s) => s.winner)
   const error = useSpinStore((s) => s.error)
@@ -22,6 +25,19 @@ export function SpinControls() {
           onChange={(event) => setRemoveAfterWin(event.target.checked)}
         />
         Loại người thắng khỏi vòng quay sau
+      </label>
+
+      <label className={styles.durationRow}>
+        <span>Thời lượng quay: {spinDurationSec}s</span>
+        <input
+          type="range"
+          min={WHEEL_CONFIG.minSpinDurationSec}
+          max={WHEEL_CONFIG.maxSpinDurationSec}
+          step={1}
+          value={spinDurationSec}
+          disabled={status === 'spinning'}
+          onChange={(event) => setSpinDurationSec(Number(event.target.value))}
+        />
       </label>
 
       <button

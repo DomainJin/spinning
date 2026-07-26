@@ -28,9 +28,16 @@ export const WHEEL_CONFIG = {
   /** How many extra full loops of the pool the reel scrolls through before landing, for a convincing spin. */
   minLoops: 3,
   maxLoops: 5,
-  /** Spin duration bounds (ms) — actual duration scales with pool size within this range. */
-  minDurationMs: 7000,
-  maxDurationMs: 13000,
+  /**
+   * Spin duration is operator-adjustable (see useSettingsStore.spinDurationSec)
+   * — these just bound the slider and seed its default. Actual duration
+   * still scales with pool size, between `spinDurationMinRatio × target` and
+   * `target` itself.
+   */
+  minSpinDurationSec: 5,
+  maxSpinDurationSec: 20,
+  defaultSpinDurationSec: 10,
+  spinDurationMinRatio: 0.6,
   /** CSS cubic-bezier easing used for the deceleration curve. */
   easing: 'cubic-bezier(0.12, 0.85, 0.16, 1)',
 } as const

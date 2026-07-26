@@ -42,12 +42,16 @@ function toReelItem(p: Participant, lap: number, seat: number): ReelItem {
   return { key: `${p.id}-${lap}-${seat}`, participantId: p.id, name: p.name }
 }
 
-/** Spin duration scales with pool size (bigger pool = longer suspense) within the configured bounds. */
-export function computeDurationMs(poolSize: number): number {
+/**
+ * Spin duration scales with pool size (bigger pool = longer suspense)
+ * between `spinDurationMinRatio × targetDurationMs` and `targetDurationMs`
+ * itself — `targetDurationMs` is the operator-adjustable spin duration
+ * setting (see useSettingsStore.spinDurationSec), not a fixed constant.
+ */
+export function computeDurationMs(poolSize: number, targetDurationMs: number): number {
+  const minDurationMs = targetDurationMs * WHEEL_CONFIG.spinDurationMinRatio
   const sizeFactor = Math.min(Math.max(poolSize, 1), 100) / 100
-  return Math.round(
-    WHEEL_CONFIG.minDurationMs + (WHEEL_CONFIG.maxDurationMs - WHEEL_CONFIG.minDurationMs) * sizeFactor,
-  )
+  return Math.round(minDurationMs + (targetDurationMs - minDurationMs) * sizeFactor)
 }
 
 /**
@@ -59,6 +63,7 @@ export function computeDurationMs(poolSize: number): number {
 export function buildReelSequence(
   eligible: Participant[],
   winner: Participant,
+  targetDurationMs: number,
   rng: () => number = Math.random,
 ): ReelSequence {
   const { visibleCount, minLoops, maxLoops } = WHEEL_CONFIG
@@ -84,5 +89,5 @@ export function buildReelSequence(
     items.push(toReelItem(postWinner[i % postWinner.length], loops + 1, i))
   }
 
-  return { items, winnerIndex, durationMs: computeDurationMs(eligible.length) }
+  return { items, winnerIndex, durationMs: computeDurationMs(eligible.length, targetDurationMs) }
 }

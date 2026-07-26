@@ -53,19 +53,23 @@ button {
  * Reel spin blur — kept in global (unscoped) CSS rather than a *.module.css
  * file specifically so its name is never hash-renamed: useReelAnimation.ts
  * references "reel-blur-spin" as a literal string when starting a spin.
- * Sharp at rest, blurred through the fast opening burst of the spin easing
- * curve, clear again well before the slow landing tail — so the fast phase
- * reads as an intentional blur instead of text you're failing to read.
+ *
+ * The spin's easing curve (WHEEL_CONFIG.easing) covers ~85% of the scroll
+ * distance in the first ~12% of the duration, then crawls slowly the rest
+ * of the way. Blur only covers that initial fast burst and clears early
+ * (~16%) rather than lingering into the slow crawl — viewers get most of
+ * the spin to actually read names going by and watch for their own, which
+ * is the suspense, not a wall of blur.
  */
 @keyframes reel-blur-spin {
   0% {
-    filter: blur(5px);
+    filter: blur(6px);
   }
-  18% {
-    filter: blur(5px);
+  7% {
+    filter: blur(6px);
   }
-  55% {
-    filter: blur(0.5px);
+  16% {
+    filter: blur(0);
   }
   100% {
     filter: blur(0);

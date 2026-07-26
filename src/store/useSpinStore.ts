@@ -38,7 +38,7 @@ export const useSpinStore = create<SpinState>((set, get) => ({
     if (get().status === 'spinning') return
 
     const { participants } = useParticipantsStore.getState()
-    const { removeAfterWin } = useSettingsStore.getState()
+    const { removeAfterWin, spinDurationSec } = useSettingsStore.getState()
     const { queue } = useRigStore.getState()
     const eligible = getEligibleParticipants(participants, removeAfterWin)
     const selection = selectWinner(eligible, queue)
@@ -51,7 +51,7 @@ export const useSpinStore = create<SpinState>((set, get) => ({
     }
 
     useRigStore.getState().setQueue(selection.nextQueue)
-    const sequence = buildReelSequence(eligible, selection.winner)
+    const sequence = buildReelSequence(eligible, selection.winner, spinDurationSec * 1000)
     const spinId = crypto.randomUUID()
 
     set({
