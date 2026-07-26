@@ -5,9 +5,11 @@ import type { PresenterState } from '../types/sync'
 export interface PresenterViewState extends PresenterState {
   /** True when this result should render already landed with no animation — a presenter that joined after the spin had already resolved elsewhere. */
   instant: boolean
+  /** Multiplier on the auto-computed row height, set from the control window — see PresenterView. */
+  presenterTextScale: number
 }
 
-const IDLE_STATE: PresenterViewState = { status: 'idle', instant: false }
+const IDLE_STATE: Omit<PresenterViewState, 'presenterTextScale'> = { status: 'idle', instant: false }
 
 /**
  * Presenter window state, driven entirely by messages from the control
@@ -16,9 +18,15 @@ const IDLE_STATE: PresenterViewState = { status: 'idle', instant: false }
  * already in progress (same spinId) doesn't hand the reel a fresh
  * BroadcastChannel-cloned `sequence` object and make it restart the
  * animation from scratch right as it should be landing.
+ *
+ * `presenterTextScale` is tracked as separate state from the spin machine
+ * above — it's an independent, orthogonal setting, and folding it into the
+ * same `setState` calls would risk it getting reset back to its default
+ * every time a spin/reset message arrives instead of persisting across them.
  */
 export function usePresenterSync(): PresenterViewState {
-  const [state, setState] = useState<PresenterViewState>(IDLE_STATE)
+  const [state, setState] = useState<Omit<PresenterViewState, 'presenterTextScale'>>(IDLE_STATE)
+  const [presenterTextScale, setPresenterTextScale] = useState(1)
   const knownSpinIdRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -60,6 +68,10 @@ export function usePresenterSync(): PresenterViewState {
           break
         }
 
+        case 'settings-update':
+          setPresenterTextScale(message.payload.presenterTextScale)
+          break
+
         case 'reset':
           knownSpinIdRef.current = null
           setState(IDLE_STATE)
@@ -70,5 +82,5 @@ export function usePresenterSync(): PresenterViewState {
     return unsubscribe
   }, [])
 
-  return state
+  return { ...state, presenterTextScale }
 }

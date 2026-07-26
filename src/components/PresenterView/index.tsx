@@ -23,7 +23,7 @@ const stageStyle = {
  * edge-to-edge instead of a thin cropped strip over a plain gradient.
  */
 export function PresenterView() {
-  const { status, lastResult, instant } = usePresenterSync()
+  const { status, lastResult, instant, presenterTextScale } = usePresenterSync()
   const [stageRef, stageHeightPx] = useStageHeightPx()
   // Rounded to a whole pixel: the browser's layout engine can silently snap
   // a fractional CSS length to its own internal rounding grid (e.g. Blink
@@ -31,9 +31,12 @@ export function PresenterView() {
   // render a hair shorter than the value this component's own math assumes.
   // That's invisible on one row but accumulates linearly with row index —
   // for a large participant pool the reel can land many pixels off the
-  // intended winner. Whole pixels have no such grid to fall between.
+  // intended winner. Whole pixels have no such grid to fall between — the
+  // operator's text-size slider (presenterTextScale) is applied *before*
+  // this rounding, not after, so that invariant holds regardless of scale.
   const itemHeightPxOverride = Math.round(
-    (stageHeightPx * WHEEL_CONFIG.presenterReelHeightFraction) / WHEEL_CONFIG.presenterVisibleRows,
+    (stageHeightPx * WHEEL_CONFIG.presenterReelHeightFraction * presenterTextScale) /
+      WHEEL_CONFIG.presenterVisibleRows,
   )
 
   // Scaled off the same resolved row height as the reel, not an independent

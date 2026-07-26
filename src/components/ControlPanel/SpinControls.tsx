@@ -10,6 +10,8 @@ export function SpinControls() {
   const setRemoveAfterWin = useSettingsStore((s) => s.setRemoveAfterWin)
   const spinDurationSec = useSettingsStore((s) => s.spinDurationSec)
   const setSpinDurationSec = useSettingsStore((s) => s.setSpinDurationSec)
+  const presenterTextScale = useSettingsStore((s) => s.presenterTextScale)
+  const setPresenterTextScale = useSettingsStore((s) => s.setPresenterTextScale)
   const status = useSpinStore((s) => s.status)
   const winner = useSpinStore((s) => s.winner)
   const error = useSpinStore((s) => s.error)
@@ -37,6 +39,18 @@ export function SpinControls() {
           value={spinDurationSec}
           disabled={status === 'spinning'}
           onChange={(event) => setSpinDurationSec(Number(event.target.value))}
+        />
+      </label>
+
+      <label className={styles.durationRow}>
+        <span>Kích thước chữ màn hình trình chiếu: {Math.round(presenterTextScale * 100)}%</span>
+        <input
+          type="range"
+          min={0.5}
+          max={2}
+          step={0.05}
+          value={presenterTextScale}
+          onChange={(event) => setPresenterTextScale(Number(event.target.value))}
         />
       </label>
 

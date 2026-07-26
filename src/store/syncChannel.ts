@@ -1,5 +1,11 @@
 import { APP_CONFIG } from '../config/wheelConfig'
-import type { PresenterState, SpinBroadcastPayload, SpinProgressPayload, SyncMessage } from '../types/sync'
+import type {
+  PresenterState,
+  SettingsUpdatePayload,
+  SpinBroadcastPayload,
+  SpinProgressPayload,
+  SyncMessage,
+} from '../types/sync'
 
 let channel: BroadcastChannel | null = null
 
@@ -26,6 +32,10 @@ export function broadcastReset(): void {
 
 export function broadcastStateSync(payload: PresenterState): void {
   postSyncMessage({ type: 'state-sync', payload })
+}
+
+export function broadcastSettingsUpdate(payload: SettingsUpdatePayload): void {
+  postSyncMessage({ type: 'settings-update', payload })
 }
 
 /** Returns an unsubscribe function. */

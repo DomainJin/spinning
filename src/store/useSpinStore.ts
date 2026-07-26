@@ -24,6 +24,8 @@ interface SpinState {
   completeSpin: () => void
   /** Clears winner flags so everyone is eligible again; leaves history and the rig queue untouched. */
   resetRound: () => void
+  /** Wipes every participant, rig entry, history entry, and setting back to a blank first-run state. */
+  resetAllData: () => void
 }
 
 export const useSpinStore = create<SpinState>((set, get) => ({
@@ -84,6 +86,22 @@ export const useSpinStore = create<SpinState>((set, get) => ({
 
   resetRound: () => {
     useParticipantsStore.getState().resetWinners()
+    set({
+      status: 'idle',
+      spinId: null,
+      sequence: null,
+      winner: null,
+      riggedThisRound: false,
+      error: null,
+    })
+    broadcastReset()
+  },
+
+  resetAllData: () => {
+    useParticipantsStore.getState().clearAll()
+    useRigStore.getState().clear()
+    useHistoryStore.getState().clear()
+    useSettingsStore.getState().resetToDefaults()
     set({
       status: 'idle',
       spinId: null,

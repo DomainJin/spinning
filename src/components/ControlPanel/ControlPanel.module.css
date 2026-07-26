@@ -32,6 +32,13 @@
   gap: 12px;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .header h1 {
   font-family: var(--font-display);
   font-weight: 700;
@@ -250,6 +257,21 @@ select.textInput {
 
 .dangerLink:hover {
   text-decoration: underline;
+}
+
+.dangerButton {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.dangerButton:hover {
+  background: var(--danger);
+  color: #04141a;
 }
 
 .spinControls {

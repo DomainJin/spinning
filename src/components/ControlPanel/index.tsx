@@ -11,6 +11,7 @@ import { RigPanel } from './RigPanel'
 import { SpinControls } from './SpinControls'
 import { HistoryPanel } from './HistoryPanel'
 import { OpenPresenterButton } from './OpenPresenterButton'
+import { FullResetButton } from './FullResetButton'
 import styles from './ControlPanel.module.css'
 
 export function ControlPanel() {
@@ -34,7 +35,10 @@ export function ControlPanel() {
       <div className={styles.body}>
         <header className={styles.header}>
           <h1>Name Picker</h1>
-          <OpenPresenterButton />
+          <div className={styles.headerActions}>
+            <OpenPresenterButton />
+            <FullResetButton />
+          </div>
         </header>
 
         <main className={styles.main}>

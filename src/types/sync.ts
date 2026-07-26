@@ -37,10 +37,16 @@ export interface SpinProgressPayload {
   elapsedMs: number
 }
 
+export interface SettingsUpdatePayload {
+  /** Multiplier applied on top of the presenter's own auto-computed row height — see PresenterView. */
+  presenterTextScale: number
+}
+
 /** Messages exchanged between the control window and presenter window(s) over BroadcastChannel. */
 export type SyncMessage =
   | { type: 'presenter-ready' }
   | { type: 'state-sync'; payload: PresenterState }
   | { type: 'spin-start'; payload: SpinBroadcastPayload }
   | { type: 'spin-progress'; payload: SpinProgressPayload }
+  | { type: 'settings-update'; payload: SettingsUpdatePayload }
   | { type: 'reset' }
