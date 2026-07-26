@@ -30,14 +30,12 @@ export const WHEEL_CONFIG = {
   maxLoops: 5,
   /**
    * Spin duration is operator-adjustable (see useSettingsStore.spinDurationSec)
-   * — these just bound the slider and seed its default. Actual duration
-   * still scales with pool size, between `spinDurationMinRatio × target` and
-   * `target` itself.
+   * and used exactly as set, regardless of pool size — these just bound the
+   * slider and seed its default.
    */
   minSpinDurationSec: 5,
   maxSpinDurationSec: 20,
   defaultSpinDurationSec: 10,
-  spinDurationMinRatio: 0.6,
   /** CSS cubic-bezier easing used for the deceleration curve. */
   easing: 'cubic-bezier(0.12, 0.85, 0.16, 1)',
 } as const

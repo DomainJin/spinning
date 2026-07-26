@@ -9,7 +9,7 @@ interface SettingsState {
   /** When true, a winner is taken out of the pool for future spins; when false, they can win again. */
   removeAfterWin: boolean
   setRemoveAfterWin: (value: boolean) => void
-  /** Target spin length in seconds (the longest a spin runs at, for a full pool) — see spinEngine.computeDurationMs. */
+  /** Exact length of every spin, in seconds — see spinEngine.buildReelSequence. */
   spinDurationSec: number
   setSpinDurationSec: (value: number) => void
 }

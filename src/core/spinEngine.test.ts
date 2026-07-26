@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildReelSequence, computeDurationMs, selectWinner } from './spinEngine'
+import { buildReelSequence, selectWinner } from './spinEngine'
 import { WHEEL_CONFIG } from '../config/wheelConfig'
 import type { Participant } from '../types/participant'
 
@@ -47,24 +47,6 @@ describe('selectWinner', () => {
   })
 })
 
-describe('computeDurationMs', () => {
-  it('stays within the min-ratio..target bounds', () => {
-    const minDurationMs = TARGET_DURATION_MS * WHEEL_CONFIG.spinDurationMinRatio
-    expect(computeDurationMs(1, TARGET_DURATION_MS)).toBeGreaterThanOrEqual(minDurationMs)
-    expect(computeDurationMs(1000, TARGET_DURATION_MS)).toBeLessThanOrEqual(TARGET_DURATION_MS)
-  })
-
-  it('grows with pool size', () => {
-    expect(computeDurationMs(50, TARGET_DURATION_MS)).toBeGreaterThan(
-      computeDurationMs(2, TARGET_DURATION_MS),
-    )
-  })
-
-  it('scales with the target duration setting', () => {
-    expect(computeDurationMs(50, 20000)).toBeGreaterThan(computeDurationMs(50, 10000))
-  })
-})
-
 describe('buildReelSequence', () => {
   const pool = makePool(['Alice', 'Bob', 'Carol', 'Dave', 'Erin'])
   const winner = pool[2]
@@ -99,8 +81,8 @@ describe('buildReelSequence', () => {
     expect(sequence.items.every((item) => item.participantId === solo[0].id)).toBe(true)
   })
 
-  it('sets duration from computeDurationMs for the given pool size and target', () => {
+  it('uses the target duration exactly, regardless of pool size', () => {
     const sequence = buildReelSequence(pool, winner, TARGET_DURATION_MS, () => 0)
-    expect(sequence.durationMs).toBe(computeDurationMs(pool.length, TARGET_DURATION_MS))
+    expect(sequence.durationMs).toBe(TARGET_DURATION_MS)
   })
 })

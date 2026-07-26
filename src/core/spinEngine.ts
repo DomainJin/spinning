@@ -43,18 +43,6 @@ function toReelItem(p: Participant, lap: number, seat: number): ReelItem {
 }
 
 /**
- * Spin duration scales with pool size (bigger pool = longer suspense)
- * between `spinDurationMinRatio × targetDurationMs` and `targetDurationMs`
- * itself — `targetDurationMs` is the operator-adjustable spin duration
- * setting (see useSettingsStore.spinDurationSec), not a fixed constant.
- */
-export function computeDurationMs(poolSize: number, targetDurationMs: number): number {
-  const minDurationMs = targetDurationMs * WHEEL_CONFIG.spinDurationMinRatio
-  const sizeFactor = Math.min(Math.max(poolSize, 1), 100) / 100
-  return Math.round(minDurationMs + (targetDurationMs - minDurationMs) * sizeFactor)
-}
-
-/**
  * Builds the full reel item list the UI animates through. `eligible` must
  * include `winner` (guaranteed by `selectWinner`'s contract) — every lap is
  * an independent shuffle of `eligible` so the reel doesn't visibly repeat a
@@ -89,5 +77,5 @@ export function buildReelSequence(
     items.push(toReelItem(postWinner[i % postWinner.length], loops + 1, i))
   }
 
-  return { items, winnerIndex, durationMs: computeDurationMs(eligible.length, targetDurationMs) }
+  return { items, winnerIndex, durationMs: targetDurationMs }
 }
