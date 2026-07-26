@@ -57,6 +57,10 @@ export function ReelWheel({
     () => ({ top: centerIndex * itemHeightPx, height: itemHeightPx }),
     [centerIndex, itemHeightPx],
   )
+  const pointerStyle = useMemo(
+    () => ({ top: centerIndex * itemHeightPx + itemHeightPx / 2 }),
+    [centerIndex, itemHeightPx],
+  )
 
   const viewportStyle = { height: viewportHeight, maxWidth: viewportMaxWidthPx * effectiveScale }
 
@@ -66,6 +70,8 @@ export function ReelWheel({
         <div className={styles.empty} style={{ height: viewportHeight, fontSize: `${effectiveScale}rem` }}>
           Chưa có người tham dự — hãy nhập danh sách từ file Excel.
         </div>
+        <div className={`${styles.rail} ${styles.railLeft}`} />
+        <div className={`${styles.rail} ${styles.railRight}`} />
       </div>
     )
   }
@@ -84,6 +90,10 @@ export function ReelWheel({
         ))}
       </div>
       <div className={styles.highlight} style={highlightStyle} />
+      <div className={`${styles.rail} ${styles.railLeft}`} />
+      <div className={`${styles.rail} ${styles.railRight}`} />
+      <div className={`${styles.pointer} ${styles.pointerLeft}`} style={pointerStyle} />
+      <div className={`${styles.pointer} ${styles.pointerRight}`} style={pointerStyle} />
     </div>
   )
 }

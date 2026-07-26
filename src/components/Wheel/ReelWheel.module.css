@@ -8,18 +8,35 @@
   box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.45),
     inset 0 0 40px rgba(31, 209, 221, 0.05);
+  /* Soft fade at the top/bottom edges instead of names hard-cutting off —
+     reads as "looking through a window" onto a continuous reel rather than
+     a plain scrolling list. */
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 14%,
+    black 86%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 14%,
+    black 86%,
+    transparent 100%
+  );
 }
 
 .track {
   display: flex;
   flex-direction: column;
-  will-change: transform;
+  will-change: transform, filter;
 }
 
 .row {
   display: flex;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 34px;
   font-weight: 600;
   color: var(--text);
   border-bottom: 1px solid rgba(31, 209, 221, 0.08);
@@ -37,6 +54,58 @@
   border-bottom: 2px solid var(--accent);
   background: var(--accent-soft);
   box-shadow: 0 0 24px rgba(31, 209, 221, 0.25);
+}
+
+/* Decorative side rails — faceted diagonal pattern echoing the KV artwork's
+   crystalline shapes, so the reel reads as a mechanical wheel with the
+   names running behind it rather than bare scrolling text. */
+.rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(31, 209, 221, 0.22) 0 5px,
+      rgba(31, 209, 221, 0.05) 5px 11px
+    ),
+    linear-gradient(180deg, rgba(4, 20, 26, 0.4), rgba(4, 20, 26, 0.4));
+}
+
+.railLeft {
+  left: 0;
+  border-right: 1px solid rgba(31, 209, 221, 0.3);
+  box-shadow: 2px 0 12px rgba(31, 209, 221, 0.12);
+}
+
+.railRight {
+  right: 0;
+  border-left: 1px solid rgba(31, 209, 221, 0.3);
+  box-shadow: -2px 0 12px rgba(31, 209, 221, 0.12);
+}
+
+/* Slot-machine style pointer markers flanking the winning row. */
+.pointer {
+  position: absolute;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  pointer-events: none;
+  filter: drop-shadow(0 0 5px rgba(31, 209, 221, 0.7));
+}
+
+.pointerLeft {
+  left: 15px;
+  border-left: 11px solid var(--accent);
+}
+
+.pointerRight {
+  right: 15px;
+  border-right: 11px solid var(--accent);
 }
 
 .empty {

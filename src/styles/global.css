@@ -48,3 +48,26 @@ body {
 button {
   font-family: inherit;
 }
+
+/*
+ * Reel spin blur — kept in global (unscoped) CSS rather than a *.module.css
+ * file specifically so its name is never hash-renamed: useReelAnimation.ts
+ * references "reel-blur-spin" as a literal string when starting a spin.
+ * Sharp at rest, blurred through the fast opening burst of the spin easing
+ * curve, clear again well before the slow landing tail — so the fast phase
+ * reads as an intentional blur instead of text you're failing to read.
+ */
+@keyframes reel-blur-spin {
+  0% {
+    filter: blur(5px);
+  }
+  18% {
+    filter: blur(5px);
+  }
+  55% {
+    filter: blur(0.5px);
+  }
+  100% {
+    filter: blur(0);
+  }
+}

@@ -2,6 +2,9 @@ import { useEffect, useRef } from 'react'
 import { WHEEL_CONFIG } from '../../config/wheelConfig'
 import type { ReelSequence } from '../../types/spin'
 
+/** Must match the @keyframes name in src/styles/global.css exactly. */
+const BLUR_ANIMATION_NAME = 'reel-blur-spin'
+
 interface UseReelAnimationOptions {
   sequence: ReelSequence | null
   onLanded?: () => void
@@ -39,6 +42,7 @@ export function useReelAnimation({
 
     if (!sequence) {
       track.style.transition = 'none'
+      track.style.animation = 'none'
       track.style.transform = 'translateY(0px)'
       return
     }
@@ -47,12 +51,14 @@ export function useReelAnimation({
 
     if (instant) {
       track.style.transition = 'none'
+      track.style.animation = 'none'
       track.style.transform = `translateY(${targetY}px)`
       onLandedRef.current?.()
       return
     }
 
     track.style.transition = 'none'
+    track.style.animation = 'none'
     track.style.transform = 'translateY(0px)'
     // Force the browser to commit the transition-less reset before re-enabling it below.
     void track.offsetHeight
@@ -64,6 +70,7 @@ export function useReelAnimation({
         const current = trackRef.current
         if (!current) return
         current.style.transition = `transform ${sequence.durationMs}ms ${WHEEL_CONFIG.easing}`
+        current.style.animation = `${BLUR_ANIMATION_NAME} ${sequence.durationMs}ms ease-out forwards`
         current.style.transform = `translateY(${targetY}px)`
       })
     })
