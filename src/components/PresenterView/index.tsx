@@ -22,11 +22,11 @@ const stageStyle = {
  * APP_CONFIG.presenterAspectRatio) so the background art fills the frame
  * edge-to-edge instead of a thin cropped strip over a plain gradient.
  *
- * The reel itself is the only announcement of the winner — no separate
- * name/banner below it. Once landed, ReelWheelView dims every row except
- * the highlighted one (see its `focused` prop) so the eye goes straight to
- * the winning row instead of splitting attention between the wheel and a
- * repeated text callout.
+ * The glass panel holds nothing but the reel — no separate status text or
+ * winner banner. Once landed, ReelWheelView dims every row except the
+ * highlighted one (see its `focused` prop) so the eye goes straight to the
+ * winning row instead of splitting attention between the wheel and text
+ * elsewhere in the panel.
  */
 export function PresenterView() {
   const { status, lastResult, instant, presenterTextScale, idleItems } = usePresenterSync()
@@ -44,7 +44,6 @@ export function PresenterView() {
     (stageHeightPx * WHEEL_CONFIG.presenterReelHeightFraction * presenterTextScale) /
       WHEEL_CONFIG.presenterVisibleRows,
   )
-  const statusFontSizePx = itemHeightPxOverride * 0.5
 
   return (
     <div className={styles.stageOuter}>
@@ -65,16 +64,6 @@ export function PresenterView() {
               landed={status === 'result'}
               spinId={lastResult?.spinId ?? null}
             />
-            {status === 'idle' && (
-              <p className={styles.status} style={{ fontSize: statusFontSizePx }}>
-                Đang chờ vòng quay tiếp theo...
-              </p>
-            )}
-            {status === 'spinning' && (
-              <p className={styles.status} style={{ fontSize: statusFontSizePx }}>
-                Đang quay...
-              </p>
-            )}
           </div>
         </div>
       </div>

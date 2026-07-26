@@ -63,8 +63,3 @@
   gap: 0.5vw;
   box-shadow: 0 2vw 6vw rgba(0, 0, 0, 0.5);
 }
-
-.status {
-  color: var(--text-muted);
-  letter-spacing: 0.02em;
-}
