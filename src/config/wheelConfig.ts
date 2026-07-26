@@ -27,7 +27,7 @@ export const WHEEL_CONFIG = {
    * status/winner line) fits under the KV artwork's logo lockup — see
    * APP_CONFIG.presenterContentTopPct.
    */
-  presenterReelHeightFraction: 0.34,
+  presenterReelHeightFraction: 0.46,
   /** How many extra full loops of the pool the reel scrolls through before landing, for a convincing spin. */
   minLoops: 3,
   maxLoops: 5,
