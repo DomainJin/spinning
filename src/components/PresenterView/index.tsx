@@ -27,6 +27,15 @@ export function PresenterView() {
   const itemHeightPxOverride =
     (stageHeightPx * WHEEL_CONFIG.presenterReelHeightFraction) / WHEEL_CONFIG.presenterVisibleRows
 
+  // Scaled off the same resolved row height as the reel, not an independent
+  // viewport-relative size, so the winner reveal stays proportionate to it
+  // instead of dwarfing it. Long names (military-rank-prefixed names run
+  // long) shrink further rather than wrapping to three huge lines.
+  const winnerName = lastResult?.winnerName ?? ''
+  const lengthFactor = Math.min(1, 16 / Math.max(winnerName.length, 1))
+  const winnerFontSizePx = Math.max(itemHeightPxOverride * 0.85 * lengthFactor, itemHeightPxOverride * 0.4)
+  const statusFontSizePx = itemHeightPxOverride * 0.5
+
   return (
     <div className={styles.stageOuter}>
       <div className={styles.stage} style={stageStyle}>
@@ -44,10 +53,20 @@ export function PresenterView() {
               visibleRows={WHEEL_CONFIG.presenterVisibleRows}
               instant={instant}
             />
-            {status === 'idle' && <p className={styles.status}>Đang chờ vòng quay tiếp theo...</p>}
-            {status === 'spinning' && <p className={styles.status}>Đang quay...</p>}
+            {status === 'idle' && (
+              <p className={styles.status} style={{ fontSize: statusFontSizePx }}>
+                Đang chờ vòng quay tiếp theo...
+              </p>
+            )}
+            {status === 'spinning' && (
+              <p className={styles.status} style={{ fontSize: statusFontSizePx }}>
+                Đang quay...
+              </p>
+            )}
             {status === 'result' && lastResult && (
-              <p className={styles.winner}>🎉 {lastResult.winnerName} 🎉</p>
+              <p className={styles.winner} style={{ fontSize: winnerFontSizePx }}>
+                🎉 {lastResult.winnerName} 🎉
+              </p>
             )}
           </div>
         </div>
