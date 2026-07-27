@@ -6,9 +6,11 @@ import { broadcastSettingsUpdate } from './syncChannel'
 const REMOVE_AFTER_WIN_KEY = 'settings:removeAfterWin'
 const SPIN_DURATION_KEY = 'settings:spinDurationSec'
 const PRESENTER_TEXT_SCALE_KEY = 'settings:presenterTextScale'
+const PRESENTER_CENTERED_KEY = 'settings:presenterCentered'
 
 const DEFAULT_REMOVE_AFTER_WIN = true
 const DEFAULT_PRESENTER_TEXT_SCALE = 1
+const DEFAULT_PRESENTER_CENTERED = false
 
 interface SettingsState {
   /** When true, a winner is taken out of the pool for future spins; when false, they can win again. */
@@ -20,11 +22,14 @@ interface SettingsState {
   /** Multiplier on the presenter's auto-computed row height, for manually correcting how it reads on the actual LED wall. */
   presenterTextScale: number
   setPresenterTextScale: (value: number) => void
+  /** When true, the presenter's glass panel sits centered on the stage instead of the KV artwork's negative-space anchor point. */
+  presenterCentered: boolean
+  setPresenterCentered: (value: boolean) => void
   /** Restores every setting here to its out-of-the-box default (used by the full data reset). */
   resetToDefaults: () => void
 }
 
-export const useSettingsStore = create<SettingsState>((set) => ({
+export const useSettingsStore = create<SettingsState>((set, get) => ({
   removeAfterWin: loadPersisted<boolean>(REMOVE_AFTER_WIN_KEY, DEFAULT_REMOVE_AFTER_WIN),
   setRemoveAfterWin: (value) => {
     savePersisted(REMOVE_AFTER_WIN_KEY, value)
@@ -39,17 +44,28 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   setPresenterTextScale: (value) => {
     savePersisted(PRESENTER_TEXT_SCALE_KEY, value)
     set({ presenterTextScale: value })
-    broadcastSettingsUpdate({ presenterTextScale: value })
+    broadcastSettingsUpdate({ presenterTextScale: value, presenterCentered: get().presenterCentered })
+  },
+  presenterCentered: loadPersisted<boolean>(PRESENTER_CENTERED_KEY, DEFAULT_PRESENTER_CENTERED),
+  setPresenterCentered: (value) => {
+    savePersisted(PRESENTER_CENTERED_KEY, value)
+    set({ presenterCentered: value })
+    broadcastSettingsUpdate({ presenterTextScale: get().presenterTextScale, presenterCentered: value })
   },
   resetToDefaults: () => {
     savePersisted(REMOVE_AFTER_WIN_KEY, DEFAULT_REMOVE_AFTER_WIN)
     savePersisted(SPIN_DURATION_KEY, WHEEL_CONFIG.defaultSpinDurationSec)
     savePersisted(PRESENTER_TEXT_SCALE_KEY, DEFAULT_PRESENTER_TEXT_SCALE)
+    savePersisted(PRESENTER_CENTERED_KEY, DEFAULT_PRESENTER_CENTERED)
     set({
       removeAfterWin: DEFAULT_REMOVE_AFTER_WIN,
       spinDurationSec: WHEEL_CONFIG.defaultSpinDurationSec,
       presenterTextScale: DEFAULT_PRESENTER_TEXT_SCALE,
+      presenterCentered: DEFAULT_PRESENTER_CENTERED,
     })
-    broadcastSettingsUpdate({ presenterTextScale: DEFAULT_PRESENTER_TEXT_SCALE })
+    broadcastSettingsUpdate({
+      presenterTextScale: DEFAULT_PRESENTER_TEXT_SCALE,
+      presenterCentered: DEFAULT_PRESENTER_CENTERED,
+    })
   },
 }))

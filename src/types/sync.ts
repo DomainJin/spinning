@@ -40,6 +40,8 @@ export interface SpinProgressPayload {
 export interface SettingsUpdatePayload {
   /** Multiplier applied on top of the presenter's own auto-computed row height — see PresenterView. */
   presenterTextScale: number
+  /** When true, the presenter's glass panel sits in the exact center of the stage instead of the KV artwork's negative-space anchor point — see PresenterView. */
+  presenterCentered: boolean
 }
 
 export interface IdleItemsUpdatePayload {

@@ -63,3 +63,12 @@
   gap: 0.5vw;
   box-shadow: 0 2vw 6vw rgba(0, 0, 0, 0.5);
 }
+
+/* Operator-toggled alternative to the KV-artwork-anchored position above —
+   dead center of the stage on both axes, for backgrounds/events where the
+   negative-space band this app was tuned against doesn't apply. */
+.glassCentered {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

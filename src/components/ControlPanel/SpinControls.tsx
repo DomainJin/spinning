@@ -12,6 +12,8 @@ export function SpinControls() {
   const setSpinDurationSec = useSettingsStore((s) => s.setSpinDurationSec)
   const presenterTextScale = useSettingsStore((s) => s.presenterTextScale)
   const setPresenterTextScale = useSettingsStore((s) => s.setPresenterTextScale)
+  const presenterCentered = useSettingsStore((s) => s.presenterCentered)
+  const setPresenterCentered = useSettingsStore((s) => s.setPresenterCentered)
   const status = useSpinStore((s) => s.status)
   const winner = useSpinStore((s) => s.winner)
   const error = useSpinStore((s) => s.error)
@@ -52,6 +54,15 @@ export function SpinControls() {
           value={presenterTextScale}
           onChange={(event) => setPresenterTextScale(Number(event.target.value))}
         />
+      </label>
+
+      <label className={styles.toggleRow}>
+        <input
+          type="checkbox"
+          checked={presenterCentered}
+          onChange={(event) => setPresenterCentered(event.target.checked)}
+        />
+        Căn giữa bánh xe trên màn hình trình chiếu
       </label>
 
       <button

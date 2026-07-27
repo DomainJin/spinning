@@ -29,7 +29,7 @@ const stageStyle = {
  * elsewhere in the panel.
  */
 export function PresenterView() {
-  const { status, lastResult, instant, presenterTextScale, idleItems } = usePresenterSync()
+  const { status, lastResult, instant, presenterTextScale, presenterCentered, idleItems } = usePresenterSync()
   const [stageRef, stageHeightPx] = useStageHeightPx()
   // Rounded to a whole pixel: the browser's layout engine can silently snap
   // a fractional CSS length to its own internal rounding grid (e.g. Blink
@@ -60,7 +60,7 @@ export function PresenterView() {
           alt="Phaselisa — The Art of Bio-Lifting"
         />
         <div className={styles.overlay}>
-          <div className={styles.glass}>
+          <div className={presenterCentered ? `${styles.glass} ${styles.glassCentered}` : styles.glass}>
             <PresenterReelWheel
               sequence={lastResult?.sequence ?? null}
               idleItems={idleItems}

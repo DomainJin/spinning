@@ -48,7 +48,11 @@ export function useControlSync(): void {
         lastResult:
           spinId && sequence && winner ? { spinId, sequence, winnerName: winner.name } : undefined,
       })
-      broadcastSettingsUpdate({ presenterTextScale: useSettingsStore.getState().presenterTextScale })
+      const settings = useSettingsStore.getState()
+      broadcastSettingsUpdate({
+        presenterTextScale: settings.presenterTextScale,
+        presenterCentered: settings.presenterCentered,
+      })
       broadcastIdleItemsUpdate({ items: currentIdleItemsPreview() })
     })
   }, [])

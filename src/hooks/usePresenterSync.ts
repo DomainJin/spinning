@@ -3,13 +3,15 @@ import { postSyncMessage, subscribeSyncChannel } from '../store/syncChannel'
 import type { PresenterState } from '../types/sync'
 import type { ReelItem } from '../types/spin'
 
-type PresenterExtras = 'presenterTextScale' | 'idleItems'
+type PresenterExtras = 'presenterTextScale' | 'presenterCentered' | 'idleItems'
 
 export interface PresenterViewState extends PresenterState {
   /** True when this result should render already landed with no animation — a presenter that joined after the spin had already resolved elsewhere. */
   instant: boolean
   /** Multiplier on the auto-computed row height, set from the control window — see PresenterView. */
   presenterTextScale: number
+  /** When true, the glass panel sits centered on the stage instead of the KV artwork's negative-space anchor point — see PresenterView. */
+  presenterCentered: boolean
   /** Static preview of the current pool, shown while idle — see PresenterView/ControlPanel's idleItems. */
   idleItems: ReelItem[]
 }
@@ -32,6 +34,7 @@ const IDLE_STATE: Omit<PresenterViewState, PresenterExtras> = { status: 'idle', 
 export function usePresenterSync(): PresenterViewState {
   const [state, setState] = useState<Omit<PresenterViewState, PresenterExtras>>(IDLE_STATE)
   const [presenterTextScale, setPresenterTextScale] = useState(1)
+  const [presenterCentered, setPresenterCentered] = useState(false)
   const [idleItems, setIdleItems] = useState<ReelItem[]>([])
   const knownSpinIdRef = useRef<string | null>(null)
 
@@ -76,6 +79,7 @@ export function usePresenterSync(): PresenterViewState {
 
         case 'settings-update':
           setPresenterTextScale(message.payload.presenterTextScale)
+          setPresenterCentered(message.payload.presenterCentered)
           break
 
         case 'idle-items-update':
@@ -92,5 +96,5 @@ export function usePresenterSync(): PresenterViewState {
     return unsubscribe
   }, [])
 
-  return { ...state, presenterTextScale, idleItems }
+  return { ...state, presenterTextScale, presenterCentered, idleItems }
 }
