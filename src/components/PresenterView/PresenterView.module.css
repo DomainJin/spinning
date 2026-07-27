@@ -65,10 +65,14 @@
 }
 
 /* Operator-toggled alternative to the KV-artwork-anchored position above —
-   dead center of the stage on both axes, for backgrounds/events where the
-   negative-space band this app was tuned against doesn't apply. */
+   horizontally dead-center, for backgrounds/events where the negative-space
+   band this app was tuned against doesn't apply. Vertically NOT the
+   geometric center of the wall — see --centered-top-pct (from
+   APP_CONFIG.presenterCenteredTopPct): the audience physically reaches up
+   to touch the screen at the wheel's center to trigger a spin, so it's
+   pinned to a comfortable reach height on the real 4m-tall wall instead. */
 .glassCentered {
   left: 50%;
-  top: 50%;
+  top: calc(var(--centered-top-pct, 0.5) * 100%);
   transform: translate(-50%, -50%);
 }

@@ -68,6 +68,17 @@ export const WHEEL_CONFIG = {
   decelEasingControlPoints: [0.5, 1, 0.89, 1] as [number, number, number, number],
 } as const
 
+/** Physical height (meters) of the LED wall — paired with presenterAspectRatio (20m × 4m) below to translate a desired on-wall reach height into a CSS fraction. */
+const LED_WALL_HEIGHT_METERS = 4
+/**
+ * Desired height (meters, from the floor) of the wheel's focal point — its
+ * center, where the pointer/highlight/winner sits — when "Centered" mode is
+ * on. The audience physically reaches up to touch the screen there to
+ * trigger a spin, so this is a comfortable reach height rather than the
+ * wall's exact geometric center (2m, which read as too high to reach).
+ */
+const PRESENTER_CENTERED_FOCAL_HEIGHT_METERS = 1.7
+
 export const APP_CONFIG = {
   /** BroadcastChannel name shared by control + presenter windows. */
   syncChannelName: 'name-picker-sync',
@@ -83,6 +94,14 @@ export const APP_CONFIG = {
    * whatever feeds the LED processor preserves aspect ratio end to end.
    */
   presenterAspectRatio: 5,
+  /**
+   * CSS `top` fraction (from the stage's top edge) that puts "Centered"
+   * mode's panel center at PRESENTER_CENTERED_FOCAL_HEIGHT_METERS up from
+   * the floor of the physical wall — derived from the two constants above
+   * rather than hardcoded, so it stays correct if either one changes.
+   */
+  presenterCenteredTopPct:
+    (LED_WALL_HEIGHT_METERS - PRESENTER_CENTERED_FOCAL_HEIGHT_METERS) / LED_WALL_HEIGHT_METERS,
   /**
    * Where the reel/winner overlay sits on the presenter background, as a
    * fraction of stage width — measured directly from the KV artwork's

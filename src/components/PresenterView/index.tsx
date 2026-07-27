@@ -11,6 +11,7 @@ const stageStyle = {
   ['--content-center-x' as string]: APP_CONFIG.presenterContentCenterX,
   ['--content-width-pct' as string]: APP_CONFIG.presenterContentWidthPct,
   ['--content-top-y' as string]: APP_CONFIG.presenterContentTopPct,
+  ['--centered-top-pct' as string]: APP_CONFIG.presenterCenteredTopPct,
 } as CSSProperties
 
 /**
